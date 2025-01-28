@@ -10,8 +10,8 @@
 .circle {
     display: flex;          /* Делаем круг flex-контейнером */
     text-align: center;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 30%;
     background-color: black; 
     align-items: center;   
@@ -33,6 +33,8 @@
 }
 
 .event_contrainer{
+    position: relative; /* Чтобы дочерние элементы могли накладываться */
+
     display: flex;
     justify-content:center;
     vertical-align:top;
@@ -42,3 +44,11 @@
 
     border-radius: 20px;
 }
+
+.event_creator_block_overlay {
+    position: absolute;
+    top: 50%;
+    left: 30px; 
+    transform: translateY(-50%);
+    z-index: 1;
+  }

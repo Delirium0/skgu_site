@@ -1,5 +1,7 @@
 .event_creator_block {
-    width: 70%;
+    position: relative; /* Чтобы дочерние элементы могли позиционироваться относительно этого блока */
+
+    width: 200px;
     padding: 3px 3px;
     height: 50px;
     display: flex;
@@ -7,6 +9,8 @@
     background-color: rgb(63, 63, 63);
     border-radius: 20px;
     max-width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* горизонтальное смещение, вертикальное смещение, размытие, цвет */
+    z-index: 1; /* чтобы блок был на переднем плане */
   }
   
   .event_creator_image {
