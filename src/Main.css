@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
     font-family: 'Inter';
     src: url('fonts/Inter-Regular.ttf') format('truetype');
     font-weight: 400;
@@ -17,4 +17,10 @@
     src: url('fonts/Inter-Black.ttf') format('truetype');
     font-weight: 900;
     font-style: normal;
+} */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Чтобы отступы и размеры учитывались корректно */
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Event from './events/Event';
 import event_background from './events/1111.png'
 import event_creator_image from './events/ава.png'
+import './../Main.css'
 const Home = () => {
     const [event, setEvent] = useState({
         id: 1,
@@ -16,7 +17,9 @@ const Home = () => {
     return (
         <div>
             <Event event_info={event}></Event>
-        </div>
+            <Event event_info={event}></Event>
+            <Event event_info={event}></Event>
+            </div>
     );
 };
 
