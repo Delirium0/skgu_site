@@ -2,7 +2,7 @@ import React from "react";
 import "./Down_menu.css";
 import Button from "./Button";
 import Event_text_and_icon from "./Event_text_and_icon";
-const Down_info_block = ({ time, raiting }) => {
+const Down_info_block = ({ time, raiting, event_name }) => {
   const svgIconStar = (
     <svg className="svg_time">
       <path d="M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10s10-4.477,10-10C22,6.477,17.523,2,12,2z M14.586,16l-3.293-3.293 C11.105,12.519,11,12.265,11,12V7c0-0.552,0.448-1,1-1h0c0.552,0,1,0.448,1,1v4.586l3,3c0.39,0.39,0.39,1.024,0,1.414l0,0 C15.61,16.39,14.976,16.39,14.586,16z" />
@@ -19,7 +19,7 @@ const Down_info_block = ({ time, raiting }) => {
     <div className="down_info_container">
       <div className="down_info_block">
         <h3 className="header_down_info">
-          Защита диплома технологические инструменты
+          {event_name}
         </h3>
         <div className="down_info_and_button">
             <div className="down_all_info">

@@ -1,0 +1,14 @@
+.page_block{
+    background-color: rgb(21,21,21);
+
+    height: 100%;
+}
+
+
+.events_header {
+    margin-left: 26px;
+    color: rgb(247, 252, 248); /* Цвет текста */
+    padding-top: 30px;
+    font-family: 'Inter', sans-serif; /* Шрифт */
+
+}

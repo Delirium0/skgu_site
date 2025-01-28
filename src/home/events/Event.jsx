@@ -24,6 +24,7 @@ const Event = ({ event_info }) => {
       <Down_info_block
         time={event_info.event_time}
         raiting={event_info.event_raiting}
+        event_name={event_info.event_name}
       />
     </div>
   );
