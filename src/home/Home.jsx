@@ -7,6 +7,8 @@ import Slider_events from "./events/Slider_events";
 import Faculty from "./faculties/Faculty";
 import Slider from "./Slider";
 import Event from "./events/Event";
+import RatingDisplay from './raiting/RatingDisplay'
+import Map from "./map/Map";
 const Home = () => {
   const [event, setEvent] = useState({
     id: 1,
@@ -45,7 +47,8 @@ const Home = () => {
       version="1.1"
       id="Capa_1"
       viewBox="0 0 46.333 46.333"
-      stroke="     rgb(247, 252, 248)"
+      stroke="     rgb(0, 0, 0)"
+      fill="rgb(247, 252, 248)"
     >
       <g>
         <g>
@@ -317,7 +320,13 @@ const Home = () => {
         <h3 className="events_header"> Факультеты</h3>
         <Slider events={facultyes} Component={Faculty}></Slider>
       </div>
+
+
+    {/* <RatingDisplay currentRating={93} previousRating={67}></RatingDisplay> */}
+    <Map></Map>
     </div>
+
+
   );
 };
 
