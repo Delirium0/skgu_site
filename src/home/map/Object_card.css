@@ -1,0 +1,36 @@
+.card {
+    display: flex;
+    height: 140px;
+    background-color: rgb(46, 46, 46);
+    border-radius: 16px;
+    box-sizing: border-box;
+    margin: 10px 10px;
+    flex: 1 1 calc(33.33% - 20px); /* Равномерное распределение по строке с учетом отступов */
+
+}
+.svg_block {
+    width: 20%;
+    display: flex;
+    justify-content: center; /* Горизонтальное центрирование */
+    align-items: center; /* Вертикальное центрирование */
+}
+.svg_card_main {
+
+    width: 66px;
+    height: 66px;
+    fill: rgb(247, 252, 248);
+    display: flex;
+    justify-content: center;
+    align-items: center; /* центрируем svg */
+    box-sizing: border-box; /* Важно! Учитывает отступы и границы */
+}
+
+.main_info_block {
+    width: 80%;
+    box-sizing: border-box; /* Важно! Учитывает отступы и границы */
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    justify-content: space-around;
+}
