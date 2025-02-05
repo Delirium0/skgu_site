@@ -9,6 +9,7 @@ import Slider from "./Slider";
 import Event from "./events/Event";
 import RatingDisplay from './raiting/RatingDisplay'
 import Map from "./map/Map";
+import Map_contrainer from "./map/Map_contrainer";
 const Home = () => {
   const [event, setEvent] = useState({
     id: 1,
@@ -323,7 +324,7 @@ const Home = () => {
 
 
     {/* <RatingDisplay currentRating={93} previousRating={67}></RatingDisplay> */}
-    <Map></Map>
+    <Map_contrainer></Map_contrainer>
     </div>
 
 
