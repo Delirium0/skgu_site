@@ -1,0 +1,33 @@
+.search_icon {
+    width: 44px;
+    height: 44px;
+    object-fit: contain; /* Сохраняет пропорции, вмещая иконку */
+    filter: brightness(0) invert(1);
+    margin: 0px 20px;
+}
+
+.search_block{
+    background-color: rgb(46, 46, 46);
+    border-radius: 16px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+
+}
+input {
+    border: none;
+    outline: none;
+    background-color: transparent; /*  Сделает фон прозрачным */
+    color: white; /*  Белый текст для лучшей видимости на темном фоне  */
+    font-size: 16px; /*  Настройте размер текста по желанию  */
+    width: 100%; /*  Занимает всю доступную ширину в блоке  */
+    height: 100%; /*  Занимает всю доступную высоту в блоке  */
+    padding: 0; /* Убираем внутренние отступы */
+    margin: 0; /* Убираем внешние отступы */
+    font-size: 1.7em; /* Увеличенный размер шрифта */
+
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5); /*  Полупрозрачный белый цвет для плейсхолдера  */
+}
