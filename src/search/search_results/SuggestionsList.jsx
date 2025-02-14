@@ -1,5 +1,6 @@
 import React from 'react';
-import cl from './SuggestionsList.module.css'; // Здесь можете задать свои стили
+import cl from './SuggestionsList.module.css';
+import searchIcon from './../../Components/Footer/search-svgrepo-com.svg'; // путь к вашей иконке
 
 const SuggestionsList = ({ suggestions, onSelect }) => {
   if (!suggestions || suggestions.length === 0) return null;
@@ -12,6 +13,11 @@ const SuggestionsList = ({ suggestions, onSelect }) => {
           onClick={() => onSelect(sugg)}
           className={cl.suggestionItem}
         >
+          <img
+            src={searchIcon}
+            alt="иконка"
+            className={cl.suggestionIcon}
+          />
           {sugg.name}
         </li>
       ))}

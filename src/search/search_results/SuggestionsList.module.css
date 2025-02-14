@@ -1,0 +1,30 @@
+.suggestionsList {
+    position: absolute;
+    top: calc(70px + 5px); /* 70px – высота вашего блока .search_block, 5px – отступ */
+    left: 0;
+    width: 100%;
+    background-color: rgb(46, 46, 46);
+
+    border-top: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    list-style: none;
+    padding-left:  10px;
+  }
+  
+  .suggestionItem {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .suggestionItem:hover {
+    background: #f0f0f0;
+  }
+  .suggestionIcon {
+    width: 20px;          /* Настройте размер иконки по вкусу */
+    height: 20px;
+    object-fit: contain;
+    margin-right: 8px;      /* Отступ между иконкой и текстом */
+    filter: brightness(0) invert(1);
+
+  }
