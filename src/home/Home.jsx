@@ -10,6 +10,7 @@ import Event from "./events/Event";
 import RatingDisplay from './raiting/RatingDisplay'
 import Map from "./map/Map";
 import Map_contrainer from "./map/Map_contrainer";
+import Footer from "../Components/Footer/Footer";
 const Home = () => {
   const [event, setEvent] = useState({
     id: 1,
@@ -311,7 +312,7 @@ const Home = () => {
 
   return (
     <div className="page_block">
-      <div>
+      <div className="page_content">
         <h3 className="events_header"> Недавние ивенты</h3>
 
         {/* <Slider_events events={events}></Slider_events> */}
@@ -325,10 +326,14 @@ const Home = () => {
 
     {/* <RatingDisplay currentRating={93} previousRating={67}></RatingDisplay> */}
     <Map_contrainer></Map_contrainer>
+    <Footer></Footer>
+
     </div>
 
 
   );
+
+
 };
 
 export default Home;
