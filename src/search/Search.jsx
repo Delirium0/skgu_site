@@ -12,30 +12,30 @@ const Search = () => {
   // Отправляем запрос, когда выбран target
   useEffect(() => {
     if (!target) return;
-    axios.get(`http://localhost:8000/route?start=${start}&target=${target}`)
+    axios.get(`${process.env.REACT_APP_API_URL}/search/route`, {
+      params: { start: start, target: target }
+    })
       .then((response) => {
         const images = response.data.images.map((imgData) => ({
           floor: imgData.floor,
           image: `data:image/png;base64,${imgData.image}`,
         }));
-
+  
         const sortedFloors = [...images].sort((a, b) => {
-          const floorA = parseInt(a.floor, 10);
-          const floorB = parseInt(b.floor, 10);
-          return floorA - floorB;
+          return parseInt(a.floor, 10) - parseInt(b.floor, 10);
         });
-
+  
         setFloorsData(sortedFloors);
       })
       .catch((error) => {
         console.error('Error fetching route:', error);
       });
   }, [target]);
+  
 
   return (
     <div className={cl.main_search_block}>
       <Search_element onSelectTarget={setTarget} />
-      <h1>Маршрут</h1>
       <Search_results floorsData={floorsData} />
     </div>
   );

@@ -13,12 +13,19 @@ const SuggestionsList = ({ suggestions, onSelect }) => {
           onClick={() => onSelect(sugg)}
           className={cl.suggestionItem}
         >
-          <img
-            src={searchIcon}
-            alt="иконка"
-            className={cl.suggestionIcon}
-          />
-          {sugg.name}
+          <div className={cl.suggestionContent}> {/* Обертка для иконки и текста */}
+            <img
+              src={searchIcon}
+              alt="иконка"
+              className={cl.suggestionIcon}
+            />
+            <div> {/*  Блок для названия и дополнительной информации */}
+              <div className={cl.suggestionName}>{sugg.building_name} {sugg.building_number} {sugg.name}</div> {/* Название */}
+              <div className={cl.suggestionDetails}> {/* Дополнительная информация */}
+                {sugg.description && `${sugg.description}`} {/* Описание */}
+              </div>
+            </div>
+          </div>
         </li>
       ))}
     </ul>

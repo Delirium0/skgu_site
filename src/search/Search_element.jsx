@@ -8,10 +8,13 @@ const Search_element = ({ onSelectTarget }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [skipSuggestions, setSkipSuggestions] = useState(false);
   const inputRef = useRef(null);
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
+    // Сбрасываем флаг, если пользователь вводит новый текст
+    setSkipSuggestions(false);
   };
 
   // Debounce ввода пользователя
@@ -25,11 +28,14 @@ const Search_element = ({ onSelectTarget }) => {
     };
   }, [searchTerm]);
 
-  // Запрос подсказок при изменении debouncedSearchTerm
+  // Запрос подсказок при изменении debouncedSearchTerm, если не выбран элемент
   useEffect(() => {
+    if (skipSuggestions) return; // Если подсказка уже выбрана, не запрашиваем снова
     if (debouncedSearchTerm) {
       axios
-        .get(`http://localhost:8000/suggest?term=${debouncedSearchTerm}`)
+        .get(`${process.env.REACT_APP_API_URL}/search/suggest`, {
+          params: { temp: debouncedSearchTerm },
+        })
         .then((response) => {
           setSuggestions(response.data.suggestions);
         })
@@ -39,11 +45,13 @@ const Search_element = ({ onSelectTarget }) => {
     } else {
       setSuggestions([]);
     }
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, skipSuggestions]);
 
   const handleSuggestionClick = (suggestion) => {
     setSearchTerm(suggestion.name);
     setSuggestions([]);
+    // Устанавливаем флаг, чтобы не запрашивать подсказки по уже выбранному значению
+    setSkipSuggestions(true);
     // Передаём выбранный target (например, "2_office_214")
     onSelectTarget(suggestion.id);
   };
