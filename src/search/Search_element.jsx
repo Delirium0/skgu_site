@@ -53,7 +53,7 @@ const Search_element = ({ onSelectTarget }) => {
     // Устанавливаем флаг, чтобы не запрашивать подсказки по уже выбранному значению
     setSkipSuggestions(true);
     // Передаём выбранный target (например, "2_office_214")
-    onSelectTarget(suggestion.id);
+    onSelectTarget({room_name: suggestion.id, building_number: suggestion.building_number});
   };
 
   const handleBlockClick = () => {

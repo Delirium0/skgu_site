@@ -9,7 +9,7 @@ const SuggestionsList = ({ suggestions, onSelect }) => {
     <ul className={cl.suggestionsList}>
       {suggestions.map((sugg) => (
         <li
-          key={sugg.id}
+          key={sugg.key}
           onClick={() => onSelect(sugg)}
           className={cl.suggestionItem}
         >
