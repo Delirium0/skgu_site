@@ -4,15 +4,26 @@ import axios from "axios";
 import cl from "./Search.module.css";
 import Search_element from "./Search_element";
 import Map from "../home/map/Map";
+import Building_contrainer from "./building_container/Building_contrainer";
+import Building_container_list from "./building_container/Building_container_list";
 const Search = () => {
   const [floorsData, setFloorsData] = useState([]);
   const [target, setTarget] = useState(null);
   const [point, setPoint] = useState(null);
   const [centerPoint, setCenterPoint] = useState(null);
   const start = "1_entrance"; // или другой начальный узел
+  const [selectedPoint, setSelectedPoint] = useState(null);
+
   // Отправляем запрос, когда выбран target
   useEffect(() => {
-    if (!target) return;
+    if (!target) {
+      // Сбрасываем состояние, если target становится null
+      setFloorsData([]);
+      setPoint(null);
+      setCenterPoint(null);
+      return; // Прекращаем выполнение, если target равен null
+    }
+
     axios
       .get(`${process.env.REACT_APP_API_URL}/search/route`, {
         params: {
@@ -26,7 +37,7 @@ const Search = () => {
           floor: imgData.floor,
           image: `data:image/png;base64,${imgData.image}`,
         }));
-  
+
         // Проверяем, есть ли данные для отображения карты
         if (
           response.data.location &&
@@ -43,26 +54,41 @@ const Search = () => {
           setPoint(null); // Important: Set point to null
           setCenterPoint(null);
         }
-  
+
         const sortedFloors = [...images].sort((a, b) => {
           return parseInt(a.floor, 10) - parseInt(b.floor, 10);
         });
-  
+
         setFloorsData(sortedFloors);
       })
       .catch((error) => {
         console.error("Error fetching route:", error);
       });
   }, [target]);
-  const [selectedPoint, setSelectedPoint] = useState(null);
+
+
 
   return (
     <div className={cl.main_search_block}>
       <Search_element onSelectTarget={setTarget} />
-      {point !== null && (
-  <Map points={point} selectedPoint={selectedPoint} center_points={centerPoint} zoom_size={17}/>
-)}
-      <Search_results floorsData={floorsData} />
+
+      {!target ? (
+        <div className={cl.before_search_info}>
+         <Building_container_list></Building_container_list>
+        </div>
+      ) : (
+        <>
+          {point !== null && (
+            <Map
+              points={point}
+              selectedPoint={selectedPoint}
+              center_points={centerPoint}
+              zoom_size={17}
+            />
+          )}
+          <Search_results floorsData={floorsData} />
+        </>
+      )}
     </div>
   );
 };

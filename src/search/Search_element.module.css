@@ -36,3 +36,19 @@ input {
 input::placeholder {
   color: rgba(255, 255, 255, 0.5); /*  Полупрозрачный белый цвет для плейсхолдера  */
 }
+
+.clearButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2em; /* Или другой размер */
+  color: #888; /* Или другой цвет */
+  padding: 0;
+  margin-left: 5px;
+  outline: none; /* Убирает обводку при фокусе */
+  padding-right: 15px;
+}
+
+.clearButton:hover {
+  color: #333;
+}

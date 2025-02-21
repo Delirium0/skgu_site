@@ -10,7 +10,6 @@
     transition: background-color 0.3s ease; /* Плавный переход при изменении цвета фона */
     padding: 5px 20px; /* Уменьшаем отступы (меньше по высоте) */
     height: 40px;
-    margin-right: 10px;
     font-weight: bold;
 
 }

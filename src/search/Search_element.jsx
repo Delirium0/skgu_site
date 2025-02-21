@@ -68,6 +68,17 @@ const Search_element = ({ onSelectTarget }) => {
     }
   };
 
+  const handleClearClick = () => {
+    setSearchTerm('');
+    setDebouncedSearchTerm(''); // Сбрасываем debouncedSearchTerm
+    setSuggestions([]); // Очищаем список предложений
+    setSkipSuggestions(false); // Разрешаем заново показывать подсказки
+    onSelectTarget(null);  // Сбрасываем target в null
+    if (inputRef.current) {
+      inputRef.current.focus(); // Возвращаем фокус в поле ввода
+    }
+  };
+
   return (
     <div className={cl.searchContainer}>
       <div className={cl.search_block} onClick={handleBlockClick}>
@@ -84,6 +95,11 @@ const Search_element = ({ onSelectTarget }) => {
           placeholder="Найти объект или кабинет"
           ref={inputRef}
         />
+        {searchTerm && (  // Отображаем крестик только если что-то введено
+          <button className={cl.clearButton} onClick={handleClearClick}>
+            ✕ 
+          </button>
+        )}
       </div>
       <SuggestionsList suggestions={suggestions} onSelect={handleSuggestionClick} />
     </div>
