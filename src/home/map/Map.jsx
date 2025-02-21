@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const Map = ({ points, selectedPoint }) => {
+const Map = ({ points, selectedPoint, center_points, zoom_size}) => {
     const mapRef = useRef(null);
     const [apiLoaded, setApiLoaded] = useState(false);
     const [mapInstance, setMapInstance] = useState(null);
+    const [markers, setMarkers] = useState([]); // Состояние для хранения маркеров
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -24,14 +25,24 @@ const Map = ({ points, selectedPoint }) => {
     }, []);
 
     useEffect(() => {
-        if (!apiLoaded) return;
+        if (!apiLoaded || !center_points || !points) return; // Проверка на наличие данных
 
         window.DG.then(() => {
-            const map = window.DG.map(mapRef.current, {
-                center: [54.875406, 69.135137],
-                zoom: 13
-            });
-            setMapInstance(map);
+            if (!mapInstance) {
+                // Создаем карту только один раз
+                const map = window.DG.map(mapRef.current, {
+                    center: center_points,
+                    zoom: zoom_size
+                });
+                setMapInstance(map);
+                return; // Выходим, чтобы не рендерить маркеры при первом рендере карты
+            }
+
+            // Удаляем старые маркеры с карты
+            markers.forEach(marker => marker.remove());
+            setMarkers([]);
+
+            const newMarkers = [];
 
             points.forEach(point => {
                 let marker;
@@ -46,18 +57,25 @@ const Map = ({ points, selectedPoint }) => {
                 } else {
                     marker = window.DG.marker([point.lat, point.lng]);
                 }
-                
+
                 if (marker) {
                     marker.bindPopup(point.title);
-                    marker.addTo(map);
+                    marker.addTo(mapInstance);
+                    newMarkers.push(marker); // Сохраняем ссылку на маркер
                 }
             });
 
-            return () => {
-                map.remove();
-            };
+            setMarkers(newMarkers); // Обновляем состояние маркеров
+
+            // Центрируем карту после добавления маркеров
+            mapInstance.setView(center_points, zoom_size);
+
+            // Возвращаем функцию очистки (необязательно, если карта не удаляется)
+            // return () => {
+            //     mapInstance.remove();
+            // };
         });
-    }, [apiLoaded, points]);
+    }, [apiLoaded, points, center_points, zoom_size, mapInstance]); // Важно: добавлены center_points и zoom_size
 
     useEffect(() => {
         if (mapInstance && selectedPoint) {
@@ -72,12 +90,12 @@ const Map = ({ points, selectedPoint }) => {
             style={{ width: '100%', height: '400px', borderRadius: '8px' }}
         />
     ) : (
-        <div style={{ 
-            width: '100%', 
-            height: '400px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
+        <div style={{
+            width: '100%',
+            height: '400px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             background: '#f0f0f0',
             borderRadius: '8px'
         }}>

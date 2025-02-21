@@ -3,7 +3,7 @@ import Map from "./Map";
 import Map_object_list from "./Map_object_list";
 const Map_container = () => {
   const [selectedPoint, setSelectedPoint] = useState(null);
-
+  const center_points = [54.875406, 69.135137]
   const svg_commission_skgu = (
     <svg viewBox="0 0 433 433">
       <path
@@ -94,33 +94,13 @@ const Map_container = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <Map points={points} selectedPoint={selectedPoint} />
+      <Map points={points} selectedPoint={selectedPoint} center_points={center_points} zoom_size={13}/>
       <Map_object_list
         points={points}
         selectedPoint={selectedPoint}
         handlePointClick={handlePointClick}
       ></Map_object_list>
-      {/*             
-            <div style={{ padding: '20px', background: '#f5f5f5', borderRadius: '8px' }}>
-                <h3>Список объектов:</h3>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {points.map((point, index) => (
-                        <li 
-                            key={index}
-                            style={{
-                                padding: '10px',
-                                cursor: 'pointer',
-                                background: selectedPoint === point ? '#e0e0e0' : 'transparent',
-                                borderRadius: '4px',
-                                marginBottom: '8px'
-                            }}
-                            onClick={() => handlePointClick(point)}
-                        >
-                            {point.title}
-                        </li>
-                    ))}
-                </ul>
-            </div> */}
+   
     </div>
   );
 };
