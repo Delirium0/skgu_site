@@ -4,7 +4,6 @@ import axios from "axios";
 import cl from "./Search.module.css";
 import Search_element from "./Search_element";
 import Map from "../home/map/Map";
-import Building_contrainer from "./building_container/Building_contrainer";
 import Building_container_list from "./building_container/Building_container_list";
 const Search = () => {
   const [floorsData, setFloorsData] = useState([]);
