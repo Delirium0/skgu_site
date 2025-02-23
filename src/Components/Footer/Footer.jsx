@@ -3,27 +3,37 @@ import cl from "./Footer.module.css";
 import homeIcon from "./home-icon-silhouette-svgrepo-com.svg";
 import accuntIcon from "./account-svgrepo-com.svg";
 import searchIcon from "./search-svgrepo-com.svg";
-
+import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <div className={cl.footer_container}>
       <div className={cl.home_block}>
-        <img className={cl.footer_home_image} src={homeIcon} alt="Home icon" />
+        <Link to="/">
+          <img
+            className={cl.footer_home_image}
+            src={homeIcon}
+            alt="Home icon"
+          />
+        </Link>
       </div>
 
       <div className={cl.home_block}>
-        <img
-          className={cl.footer_home_image}
-          src={searchIcon}
-          alt="search icon"
-        />
+        <Link to="/search">
+          <img
+            className={cl.footer_home_image}
+            src={searchIcon}
+            alt="search icon"
+          />
+        </Link>
       </div>
       <div className={cl.home_block}>
-        <img
-          className={cl.footer_home_image}
-          src={accuntIcon}
-          alt="account icon"
-        />
+        <Link to="/account">
+          <img
+            className={cl.footer_home_image}
+            src={accuntIcon}
+            alt="account icon"
+          />
+        </Link>
       </div>
     </div>
   );

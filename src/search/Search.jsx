@@ -5,6 +5,7 @@ import cl from "./Search.module.css";
 import Search_element from "./Search_element";
 import Map from "../home/map/Map";
 import Building_container_list from "./building_container/Building_container_list";
+import Footer from "../Components/Footer/Footer";
 const Search = () => {
   const [floorsData, setFloorsData] = useState([]);
   const [target, setTarget] = useState(null);
@@ -88,7 +89,9 @@ const Search = () => {
           <Search_results floorsData={floorsData} />
         </>
       )}
+      <Footer></Footer>
     </div>
+    
   );
 };
 

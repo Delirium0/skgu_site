@@ -1,47 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cl from './Building_container_list.module.css';
 import Building_contrainer from './Building_contrainer';
 import universityIconSvg from './../../assets/svg/university-svgrepo-com.svg';
+import axios from 'axios';
 
 const Building_container_list = () => {
-  const allPoints = [
-    {
-      title: "учебный корпус номер 6",
-      address: "​Улица Абая Кунанбаева, 312а",
-      time_start: "ПН-ПТ",
-      time_end: "7:00-20:00",
-      main_icon: universityIconSvg,
-      type: "academic_building",
-      typeNameRu: "Учебные корпуса"
-    },
-    {
-      title: "Бассейн СКУ им. М. Козыбаева",
-      address: "​Улица Абая Кунанбаева, 31а",
-      time_start: "ПН-ПТ",
-      time_end: "7:00-20:00",
-      main_icon: universityIconSvg,
-      type: "sport",
-      typeNameRu: "Спортивные комплексы"
-    },
-    {
-      title: "Что то еще библиотека",
-      address: "​Улица Абая Кунанбаева, 31а",
-      time_start: "ПН-ПТ",
-      time_end: "7:00-20:00",
-      main_icon: universityIconSvg,
-      type: "library",
-      typeNameRu: "Библиотеки"
-    },
-    {
-      title: "Еще один спорт комплекс",
-      address: "​Улица Абая Кунанбаева, 31б",
-      time_start: "ПН-ПТ",
-      time_end: "7:00-20:00",
-      main_icon: universityIconSvg,
-      type: "sport",
-      typeNameRu: "Спортивные комплексы"
-    }
-  ];
+  const [locations, setLocations] = useState(null);
+  const [loading, setLoading] = useState(true); // Добавляем состояние для отслеживания загрузки
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/locations/locations`);
+        setLocations(response.data);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false); // Устанавливаем loading в false, когда данные загружены или произошла ошибка
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [filterType, setFilterType] = useState(null);
 
@@ -49,20 +29,30 @@ const Building_container_list = () => {
     setFilterType(type);
   };
 
-  const filteredPoints = filterType
-    ? allPoints.filter(point => point.type === filterType)
-    : allPoints;
+  // Условный рендеринг:  Отображаем что-то, пока данные загружаются.
+  if (loading) {
+    return <div>Загрузка...</div>; // Или любой другой индикатор загрузки
+  }
 
-  const buildingTypes = [...new Set(allPoints.map(point => point.type))].map(type => {
-    const point = allPoints.find(p => p.type === type);
-    return { type: type, typeNameRu: point.typeNameRu };
+  // Если locations все еще null после загрузки, возможно, произошла ошибка.
+  if (!locations) {
+    return <div>Ошибка загрузки данных.</div>; // Сообщение об ошибке
+  }
+
+  const filteredPoints = filterType
+    ? locations.filter(point => point.building_type === filterType)
+    : locations;
+
+  const buildingTypes = [...new Set(locations.map(point => point.building_type))].map(building_type => {
+    const point = locations.find(p => p.building_type === building_type);
+    return { building_type: building_type, building_type_name_ru: point.building_type_name_ru };
   });
 
   const groupedPoints = filteredPoints.reduce((acc, point) => {
-    if (!acc[point.type]) {
-      acc[point.type] = [];
+    if (!acc[point.building_type]) {
+      acc[point.building_type] = [];
     }
-    acc[point.type].push(point);
+    acc[point.building_type].push(point);
     return acc;
   }, {});
 
@@ -89,9 +79,9 @@ const Building_container_list = () => {
     marginBottom: '16px'
   };
 
-  const getTypeNameRu = (type) => {
-    const point = allPoints.find(p => p.type === type);
-    return point ? point.typeNameRu : type;
+  const getTypeNameRu = (building_type) => {
+    const point = locations.find(p => p.building_type === building_type);
+    return point ? point.building_type_name_ru : building_type;
   };
 
   return (
@@ -103,20 +93,20 @@ const Building_container_list = () => {
         >
           Все
         </button>
-        {buildingTypes.map(({ type, typeNameRu }) => (
+        {buildingTypes.map(({ building_type, building_type_name_ru }) => (
           <button
-            key={type}
-            style={filterType === type ? activeButton : buttonStyle}
-            onClick={() => handleFilterClick(type)}
+            key={building_type}
+            style={filterType === building_type ? activeButton : buttonStyle}
+            onClick={() => handleFilterClick(building_type)}
           >
-            {typeNameRu}
+            {building_type_name_ru}
           </button>
         ))}
       </div>
 
-      {Object.entries(groupedPoints).map(([type, points]) => (
-        <div key={type} className={cl.typeBlock}>
-          <h2 className={cl.typeTitle}>{getTypeNameRu(type)}</h2>
+      {Object.entries(groupedPoints).map(([building_type, points]) => (
+        <div key={building_type} className={cl.typeBlock}>
+          <h2 className={cl.typeTitle}>{getTypeNameRu(building_type)}</h2>
           {points.map(point => (
             <Building_contrainer key={point.title} point={point} />
           ))}

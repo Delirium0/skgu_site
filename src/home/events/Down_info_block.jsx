@@ -34,7 +34,7 @@ const Down_info_block = ({ time, raiting, event_name }) => {
 
             </div>
 
-         <Button></Button>
+         <Button>Подробнее</Button>
         </div>
       </div>
     </div>
