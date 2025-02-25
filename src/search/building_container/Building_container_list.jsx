@@ -76,7 +76,8 @@ const Building_container_list = () => {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginBottom: '16px'
+    marginBottom: '16px',
+    marginTop: '10px',
   };
 
   const getTypeNameRu = (building_type) => {

@@ -1,0 +1,43 @@
+
+.card {
+    display: flex;
+    height: 140px; /* Фиксированная высота */
+    background-color: rgb(46, 46, 46);
+    border-radius: 16px;
+    box-sizing: border-box;
+    margin: 10px 10px;
+    flex: 0 0 70%;
+    overflow: auto; /*  Добавляем прокрутку, если контент не помещается */
+}
+
+.another_container {
+    /* Дополнительные стили, если нужны */
+    display: flex;
+    height: 140px; /* Фиксированная высота */
+    width: 140px;
+    min-width: 140px;
+    background-color: rgb(46, 46, 46);
+    border-radius: 16px;
+    box-sizing: border-box;
+    margin: 10px 10px;
+    overflow: auto; /*  Добавляем прокрутку, если контент не помещается */
+  }
+
+
+.subject_container {
+    display: flex;
+    justify-content: center;
+}
+
+
+.progress_icon {
+    width: 31px;
+    height: 31px;
+    object-fit: contain;
+
+}
+.progress_icon g {
+  
+    fill: green;
+
+}
