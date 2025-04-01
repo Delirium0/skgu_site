@@ -145,33 +145,57 @@
         height: 16px;
     }
 
-    /* Можно дополнительно уменьшить высоту блоков на телефонах, если нужно */
-    /*.card, .another_container {
-    height: 100px;
-    }*/
+    /*  Изменения для мобильного вида dropdown_grade_item  */
+    .dropdown_grade_item {
+        white-space: nowrap; /* Запрещаем перенос текста, чтобы расширялся блок */
+        min-width: auto; /* Автоматическая ширина на телефонах */
+        width: auto; /*  Чтобы ширина подстраивалась под контент */
+        padding-right: 20px; /* Возвращаем padding справа как на десктопе */
+        padding-left: 20px; /* Возвращаем padding слева как на десктопе */
+    }
+
+    .dropdown_grade_item::after {
+        /*  Разделитель все еще нужен, но можно сделать его менее заметным на телефонах  */
+        top: 20%; /* Возвращаем вертикальное выравнивание разделителя как на десктопе */
+        bottom: 20%;
+    }
+
+    .dropdown_grade_number {
+        font-size: 12px; /* Возвращаем размер номера модуля как на десктопе */
+        padding-right: 10px; /* Возвращаем отступ номера модуля от разделителя как на десктопе */
+    }
+
+    .dropdown_grade_value {
+        font-size: 14px; /* Уменьшаем размер оценок на телефонах */
+        display: flex; /* Убедимся, что оценки в ряд */
+        gap: 5px; /* Возвращаем расстояние между оценками как на десктопе */
+        align-items: center; /* Выравнивание оценок по центру по вертикали */
+    }
+     /*  Убираем перенос ряда и возвращаем горизонтальную прокрутку, если ряд не помещается  */
+    .dropdown_grades_row {
+        flex-wrap: nowrap; /* Запрещаем перенос ряда */
+        overflow-x: auto; /* Возвращаем горизонтальную прокрутку */
+        justify-content: flex-start; /*  Выравниваем по левому краю */
+    }
 }
 
 
 /* ... Ваши предыдущие стили ... */
 
 .dropdown_list {
-    position: absolute; /* Абсолютное позиционирование относительно subject_container */
-    top: 100%; /* Размещаем под subject_container */
-    left: 0;
-    right: 0;
     background-color: rgb(46, 46, 46);
     border-radius: 16px;
-    margin-top: 5px;
-    overflow: hidden; /* Чтобы border-radius корректно работал для внутренних элементов */
-    z-index: 10; /* Чтобы список был поверх других элементов */
-    padding: 10px 0; /* Отступы сверху и снизу списка */
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3); /* Тень для списка */
-    width: 97%; /* Чуть меньше чем subject_container чтобы было видно что это дропдаун */
+    margin-top: 5px; /* Оставьте margin-top чтобы был отступ от карточки */
+    overflow: hidden;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+    width: 97%;
     margin-left: 10px;
+    /* margin-bottom: 10px;  Можно добавить отступ снизу, если нужно  */
+
 
     /* Анимация growDown */
     transform-origin: top center;
-    transform: scaleY(0); /* Начальное состояние - список скрыт и сжат по вертикали */
+    transform: scaleY(0);
     transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s linear 0.3s;
     opacity: 0;
     visibility: hidden;
@@ -225,11 +249,30 @@
     margin-bottom: 10px;
 }
 
-.dropdown_grades_container {
+
+.dropdown_grades_rows_container {
     display: flex;
-    flex-wrap: wrap; /* Перенос элементов на новую строку при необходимости */
-    gap: 10px; /* Расстояние между элементами оценок */
+    flex-direction: column; /* Располагаем ряды вертикально */
+    gap: 10px; /* Отступ между рядами */
 }
+
+.dropdown_grades_row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0px; /* Убираем gap между элементами, так как padding в dropdown_grade_item обеспечивает отступы */
+    overflow-x: auto;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-right: 10px;
+    justify-content: flex-start; /* Выравниваем элементы в начале ряда */
+}
+
+.dropdown_grades_row::-webkit-scrollbar {
+    display: none; /* Скрываем полосу прокрутки в Chrome, Safari и Opera */
+}
+
 
 .dropdown_grade_item {
     display: flex;
@@ -237,21 +280,47 @@
     align-items: center;
     padding: 5px 10px;
     border-radius: 8px;
-    background-color: #2e2e2e; /* Фон для элемента оценки */
-    min-width: 40px; /* Минимальная ширина для элемента оценки */
+    background-color: #2e2e2e;
+    /* min-width: 40px;  Убираем min-width чтобы элемент мог расширяться */
     text-align: center;
+    white-space: nowrap;
+    position: relative; /* Для позиционирования разделителя */
+    padding-right: 20px; /* Увеличим padding справа, чтобы был отступ для разделителя и оценок */
+    padding-left: 20px; /* Симметричный padding слева */
 }
+
+/* Разделитель справа от номера модуля */
+.dropdown_grade_item::after {
+    content: '';
+    position: absolute;
+    top: 20%; /* Выравнивание по вертикали */
+    bottom: 20%; /* Выравнивание по вертикали */
+    right: 0;
+    width: 1px; /* Толщина разделителя */
+    background-color: #555; /* Цвет разделителя */
+}
+
+/* Убираем разделитель у последнего элемента в ряду (по CSS) */
+.dropdown_grades_row > .dropdown_grade_item:last-child::after {
+    content: none;
+}
+
 
 .dropdown_grade_number {
     font-size: 12px;
-    color: #aaa; /* Цвет номера модуля */
+    color: #aaa;
     margin-bottom: 2px;
+    padding-right: 10px; /* Отступ справа от номера, чтобы отделить от разделителя */
 }
 
 .dropdown_grade_value {
     font-size: 16px;
     font-weight: bold;
+    display: flex; /* Чтобы оценки в строке были в ряд */
+    gap: 5px; /* Расстояние между оценками, если их несколько */
+    align-items: center; /* Выравнивание оценок по центру по вертикали */
 }
+
 
 /* Медиазапросы при необходимости скорректируйте под список */
 @media (max-width: 768px) {
@@ -275,39 +344,4 @@
     .dropdown_grade_value {
         font-size: 14px; /* Уменьшаем размер оценок в списке на телефонах */
     }
-}
-
-
-.dropdown_grades_rows_container {
-    display: flex;
-    flex-direction: column; /* Располагаем ряды вертикально */
-    gap: 10px; /* Отступ между рядами */
-}
-
-.dropdown_grades_row {
-    display: flex;
-    flex-wrap: nowrap; /* Запрещаем перенос на новую строку, для горизонтальной прокрутки */
-    gap: 10px;
-    overflow-x: auto; /* Добавляем горизонтальную прокрутку, если ряд не помещается */
-    padding-bottom: 5px; /* Небольшой отступ снизу, чтобы прокрутка не перекрывала последний ряд */
-    -webkit-overflow-scrolling: touch; /* Для плавной прокрутки на iOS */
-    scrollbar-width: none; /* Скрываем полосу прокрутки в Firefox */
-    -ms-overflow-style: none; /* Скрываем полосу прокрутки в IE и Edge */
-    padding-right: 10px; /* Небольшой отступ справа для прокрутки */
-}
-
-.dropdown_grades_row::-webkit-scrollbar {
-    display: none; /* Скрываем полосу прокрутки в Chrome, Safari и Opera */
-}
-
-.dropdown_grade_item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 8px;
-    background-color: #2e2e2e;
-    min-width: 40px;
-    text-align: center;
-    white-space: nowrap; /* Запрещаем перенос текста внутри элемента оценки */
 }
