@@ -1,3 +1,9 @@
+.subject_container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Добавляем flex-wrap на случай, если блоки не помещаются в ряд */
+}
+
 .card {
     display: flex;
     height: 140px; /* Фиксированная высота по умолчанию */
@@ -7,6 +13,27 @@
     margin: 10px 10px;
     flex: 0 0 70%; /* Занимает 70% ширины контейнера по умолчанию */
     overflow: auto;
+    justify-content: space-between; /* Размещаем текст и стрелку по краям */
+    align-items: flex-start; /* Выравниваем контент по верхнему краю */
+    padding: 20px; /* Добавим отступы внутри карточки */
+    color: white; /* Белый цвет текста */
+    font-family: sans-serif; /* Установим шрифт */
+}
+
+.text_container {
+    display: flex;
+    flex-direction: column; /* Располагаем заголовки вертикально */
+}
+
+.subject_title {
+    font-size: 18px; /* Размер заголовка */
+    line-height: 1.2; /* Межстрочный интервал для заголовка */
+    margin-bottom: 5px; /* Отступ снизу от заголовка */
+}
+
+.teacher_name {
+    font-size: 14px; /* Размер имени преподавателя */
+    color: #ccc; /* Цвет имени преподавателя, можно сделать чуть светлее */
 }
 
 .another_container {
@@ -19,12 +46,10 @@
     box-sizing: border-box;
     margin: 10px 10px;
     overflow: auto;
-  }
-
-.subject_container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap; /* Добавляем flex-wrap на случай, если блоки не помещаются в ряд */
+    justify-content: center; /* Центрируем содержимое по горизонтали */
+    align-items: center; /* Центрируем содержимое по вертикали */
+    flex-direction: column; /* Располагаем стрелку и число вертикально */
+    color: white;
 }
 
 .progress_icon {
@@ -34,9 +59,33 @@
 }
 
 .progress_icon g {
+    fill: green; /* Зеленый цвет для стрелки */
+}
+
+.progress_icon_card {
+    width: 20px; /* Меньший размер для стрелки в карточке */
+    height: 20px;
+    object-fit: contain;
+    align-self: flex-end; /* Выравниваем стрелку внизу справа в карточке */
+}
+
+.progress_icon_card g {
     fill: green;
 }
 
+.number_container {
+    font-size: 48px; /* Большой размер числа */
+    font-weight: bold; /* Жирное число */
+    line-height: 1; /* Уменьшим межстрочный интервал для числа */
+    margin-top: 5px; /* Отступ сверху от стрелки */
+}
+
+.arrow_list {
+    margin-left: 10px;
+    display: inline-block; /* Важно для transform */
+    transform: scaleY(0.7); /* Уменьшаем вертикальный масштаб (значение можно подобрать) */
+    transform-origin: center center; /* Убедимся, что масштабирование от центра */
+}
 /* Медиазапрос для экранов шириной до 768px (телефоны) */
 @media (max-width: 768px) {
     .subject_container {
@@ -49,6 +98,7 @@
         margin: 10px 5px; /* Уменьшаем горизонтальные отступы */
         height: auto; /* Высота становится автоматической, или можно уменьшить фиксированную высоту, если нужно */
         min-height: 100px;
+        padding: 15px; /* Уменьшим отступы внутри карточки на телефонах */
     }
 
     .another_container {
@@ -63,6 +113,28 @@
     .card, .another_container {
         height: auto; /* Высота становится автоматической, или можно уменьшить фиксированную высоту, если нужно */
         min-height: 100px; /* Минимальная высота, чтобы не схлопнулись */
+    }
+
+    .subject_title {
+        font-size: 16px; /* Уменьшим размер заголовка на телефонах */
+    }
+
+    .teacher_name {
+        font-size: 12px; /* Уменьшим размер имени преподавателя на телефонах */
+    }
+
+    .number_container {
+        font-size: 36px; /* Уменьшим размер числа на телефонах */
+    }
+
+    .progress_icon {
+        width: 24px; /* Уменьшим размер стрелки на телефонах */
+        height: 24px;
+    }
+
+    .progress_icon_card {
+        width: 16px; /* Еще меньше стрелка в карточке на телефонах */
+        height: 16px;
     }
 
     /* Можно дополнительно уменьшить высоту блоков на телефонах, если нужно */
