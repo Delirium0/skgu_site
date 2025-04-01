@@ -39,8 +39,8 @@ const Subject_container = () => {
       </div>
 
       {isDropdownOpen && (
-        <div className={`${cl.dropdown_list} ${isDropdownOpen ? 'open' : ''}`}> {/* Добавляем класс 'open' */}
-            <div className={cl.dropdown_item}>
+        <div className={[cl.dropdown_list, isDropdownOpen ? cl.open : null].filter(Boolean).join(' ')}>            
+        <div className={cl.dropdown_item}>
               <div className={cl.dropdown_subject_name}>{currentSubjectData.subject_name}</div>
               <div className={cl.dropdown_teacher_name}>{currentSubjectData.teacher}</div>
               <div className={cl.dropdown_grades_rows_container}> {/* Контейнер для рядов оценок */}

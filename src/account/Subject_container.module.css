@@ -155,7 +155,7 @@
 /* ... Ваши предыдущие стили ... */
 
 .dropdown_list {
-     position: absolute; /* Абсолютное позиционирование относительно subject_container */
+    position: absolute; /* Абсолютное позиционирование относительно subject_container */
     top: 100%; /* Размещаем под subject_container */
     left: 0;
     right: 0;
@@ -169,14 +169,33 @@
     width: 97%; /* Чуть меньше чем subject_container чтобы было видно что это дропдаун */
     margin-left: 10px;
 
-    /* Добавляем transition для анимации */
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out; /* Анимация высоты и прозрачности */
+    /* Анимация growDown */
+    transform-origin: top center;
+    transform: scaleY(0); /* Начальное состояние - список скрыт и сжат по вертикали */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s linear 0.3s;
+    opacity: 0;
+    visibility: hidden;
 }
 
 /* Стиль для открытого состояния списка */
-.dropdown_list.open {
-    max-height: 500px; /* Примерная максимальная высота */
-    opacity: 1;       /* Конечная прозрачность - список видим */
+.open {
+    animation: growDown 300ms ease-out forwards; /* Применяем анимацию при открытии */
+    visibility: visible;
+    opacity: 1;
+    transform: scaleY(1); /* Убедитесь, что transform: scaleY(1) для конечного состояния */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s linear 0s;
+}
+
+@keyframes growDown {
+    0% {
+        transform: scaleY(0);
+    }
+    80% {
+        transform: scaleY(1.1); /* Небольшое превышение для эффекта "пружины" */
+    }
+    100% {
+        transform: scaleY(1);
+    }
 }
 
 
