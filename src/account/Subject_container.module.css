@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap; /* Добавляем flex-wrap на случай, если блоки не помещаются в ряд */
+    position: relative; /* **Добавьте эту строку** */
 }
 
 .card {
@@ -141,4 +142,136 @@
     /*.card, .another_container {
     height: 100px;
     }*/
+}
+
+
+/* ... Ваши предыдущие стили ... */
+
+.dropdown_list {
+     position: absolute; /* Абсолютное позиционирование относительно subject_container */
+    top: 100%; /* Размещаем под subject_container */
+    left: 0;
+    right: 0;
+    background-color: rgb(46, 46, 46);
+    border-radius: 16px;
+    margin-top: 5px;
+    overflow: hidden; /* Чтобы border-radius корректно работал для внутренних элементов */
+    z-index: 10; /* Чтобы список был поверх других элементов */
+    padding: 10px 0; /* Отступы сверху и снизу списка */
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3); /* Тень для списка */
+    width: 97%; /* Чуть меньше чем subject_container чтобы было видно что это дропдаун */
+    margin-left: 10px;
+}
+
+.dropdown_item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #555; /* Разделитель между элементами списка */
+    cursor: pointer; /* Указатель мыши при наведении */
+}
+
+.dropdown_item:last-child {
+    border-bottom: none; /* Убираем разделитель у последнего элемента */
+}
+
+.dropdown_item:hover {
+    background-color: #333; /* Небольшое изменение фона при наведении */
+}
+
+.dropdown_subject_name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.dropdown_teacher_name {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+.dropdown_grades_container {
+    display: flex;
+    flex-wrap: wrap; /* Перенос элементов на новую строку при необходимости */
+    gap: 10px; /* Расстояние между элементами оценок */
+}
+
+.dropdown_grade_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background-color: #2e2e2e; /* Фон для элемента оценки */
+    min-width: 40px; /* Минимальная ширина для элемента оценки */
+    text-align: center;
+}
+
+.dropdown_grade_number {
+    font-size: 12px;
+    color: #aaa; /* Цвет номера модуля */
+    margin-bottom: 2px;
+}
+
+.dropdown_grade_value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Медиазапросы при необходимости скорректируйте под список */
+@media (max-width: 768px) {
+    .dropdown_list {
+        width: 95%; /* Корректировка ширины на телефонах */
+        margin-left: 5px;
+    }
+
+    .dropdown_item {
+        padding: 10px 15px; /* Уменьшаем отступы внутри элементов списка на телефонах */
+    }
+
+    .dropdown_subject_name {
+        font-size: 14px; /* Уменьшаем размер заголовка в списке на телефонах */
+    }
+
+    .dropdown_teacher_name {
+        font-size: 12px; /* Уменьшаем размер имени преподавателя в списке на телефонах */
+    }
+
+    .dropdown_grade_value {
+        font-size: 14px; /* Уменьшаем размер оценок в списке на телефонах */
+    }
+}
+
+
+.dropdown_grades_rows_container {
+    display: flex;
+    flex-direction: column; /* Располагаем ряды вертикально */
+    gap: 10px; /* Отступ между рядами */
+}
+
+.dropdown_grades_row {
+    display: flex;
+    flex-wrap: nowrap; /* Запрещаем перенос на новую строку, для горизонтальной прокрутки */
+    gap: 10px;
+    overflow-x: auto; /* Добавляем горизонтальную прокрутку, если ряд не помещается */
+    padding-bottom: 5px; /* Небольшой отступ снизу, чтобы прокрутка не перекрывала последний ряд */
+    -webkit-overflow-scrolling: touch; /* Для плавной прокрутки на iOS */
+    scrollbar-width: none; /* Скрываем полосу прокрутки в Firefox */
+    -ms-overflow-style: none; /* Скрываем полосу прокрутки в IE и Edge */
+    padding-right: 10px; /* Небольшой отступ справа для прокрутки */
+}
+
+.dropdown_grades_row::-webkit-scrollbar {
+    display: none; /* Скрываем полосу прокрутки в Chrome, Safari и Opera */
+}
+
+.dropdown_grade_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background-color: #2e2e2e;
+    min-width: 40px;
+    text-align: center;
+    white-space: nowrap; /* Запрещаем перенос текста внутри элемента оценки */
 }
