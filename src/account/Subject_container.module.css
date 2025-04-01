@@ -1,43 +1,72 @@
-
 .card {
     display: flex;
-    height: 140px; /* Фиксированная высота */
+    height: 140px; /* Фиксированная высота по умолчанию */
     background-color: rgb(46, 46, 46);
     border-radius: 16px;
     box-sizing: border-box;
     margin: 10px 10px;
-    flex: 0 0 70%;
-    overflow: auto; /*  Добавляем прокрутку, если контент не помещается */
+    flex: 0 0 70%; /* Занимает 70% ширины контейнера по умолчанию */
+    overflow: auto;
 }
 
 .another_container {
-    /* Дополнительные стили, если нужны */
     display: flex;
-    height: 140px; /* Фиксированная высота */
+    height: 140px; /* Фиксированная высота по умолчанию */
     width: 140px;
     min-width: 140px;
     background-color: rgb(46, 46, 46);
     border-radius: 16px;
     box-sizing: border-box;
     margin: 10px 10px;
-    overflow: auto; /*  Добавляем прокрутку, если контент не помещается */
+    overflow: auto;
   }
-
 
 .subject_container {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap; /* Добавляем flex-wrap на случай, если блоки не помещаются в ряд */
 }
-
 
 .progress_icon {
     width: 31px;
     height: 31px;
     object-fit: contain;
-
 }
-.progress_icon g {
-  
-    fill: green;
 
+.progress_icon g {
+    fill: green;
+}
+
+/* Медиазапрос для экранов шириной до 768px (телефоны) */
+@media (max-width: 768px) {
+    .subject_container {
+        justify-content: space-around; /* Распределяем пространство между блоками и по краям */
+    }
+
+    .card {
+        flex: 0 0 calc(65% - 20px); /* Уменьшаем ширину карточки на телефонах, с учетом отступов */
+        max-width: calc(65% - 20px); /* Ограничиваем максимальную ширину */
+        margin: 10px 5px; /* Уменьшаем горизонтальные отступы */
+        height: auto; /* Высота становится автоматической, или можно уменьшить фиксированную высоту, если нужно */
+        min-height: 100px;
+    }
+
+    .another_container {
+        width: calc(35% - 20px); /* Уменьшаем ширину контейнера иконки на телефонах, с учетом отступов */
+        max-width: calc(35% - 20px); /* Ограничиваем максимальную ширину */
+        min-width: auto; /* Убираем min-width, чтобы ширина полностью контролировалась width */
+        margin: 10px 5px; /* Уменьшаем горизонтальные отступы */
+        height: auto; /* Высота становится автоматической, или можно уменьшить фиксированную высоту, если нужно */
+        min-height: 100px;
+    }
+
+    .card, .another_container {
+        height: auto; /* Высота становится автоматической, или можно уменьшить фиксированную высоту, если нужно */
+        min-height: 100px; /* Минимальная высота, чтобы не схлопнулись */
+    }
+
+    /* Можно дополнительно уменьшить высоту блоков на телефонах, если нужно */
+    /*.card, .another_container {
+    height: 100px;
+    }*/
 }
