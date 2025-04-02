@@ -34,3 +34,21 @@
     padding-bottom: 16px;
     justify-content: space-around;
 }
+
+
+@media (max-width: 425px) {
+
+    .svg_card_main {
+
+        width: 44px;
+        height: 44px;
+        fill: rgb(247, 252, 248);
+        display: flex;
+        justify-content: center;
+        align-items: center; /* центрируем svg */
+        box-sizing: border-box; /* Важно! Учитывает отступы и границы */
+    }
+    
+      
+    
+    }  

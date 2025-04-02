@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-
+import './Map.css'
 const Map = ({ points, selectedPoint, center_points, zoom_size}) => {
     const mapRef = useRef(null);
     const [apiLoaded, setApiLoaded] = useState(false);
@@ -84,11 +84,17 @@ const Map = ({ points, selectedPoint, center_points, zoom_size}) => {
     }, [selectedPoint, mapInstance]);
 
     return apiLoaded ? (
+        <div className='main_map_container'>
         <div
             id="map"
             ref={mapRef}
-            style={{ width: '100%', height: '400px', borderRadius: '8px' }}
-        />
+            style={{
+                width: '100%',
+                height: '400px',
+                borderRadius: '8px',
+              }}
+            className='map_main'
+        /></div>
     ) : (
         <div style={{
             width: '100%',

@@ -81,3 +81,23 @@ filter: brightness(0) invert(1);
 }
 
 
+@media (max-width: 425px) {
+    .main_icon {
+
+        width: 44px;          /* Настройте размер иконки по вкусу */
+        height: 44px;
+        object-fit: contain;
+        margin-right: 8px;      /* Отступ между иконкой и текстом */
+        filter: brightness(0) invert(1);
+        
+        }
+
+        .main_text {
+            font-size: 16px;
+        }
+        .text_time{
+            margin-right: 5px;
+
+        }
+    }
+  

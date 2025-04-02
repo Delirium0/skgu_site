@@ -44,3 +44,23 @@
     font-size: 14px;
 
 }
+
+
+
+@media (max-width: 425px) {
+
+    .text {
+        font-size: 12px;
+    }
+    .icon {
+        width: 1.5em;
+        height: 1em;
+        display: flex; /* Добавлено для выравнивания содержимого внутри icon */
+        align-items: center; /* Добавлено для выравнивания содержимого внутри icon */
+        justify-content: center; /* Добавлено для выравнивания содержимого внутри icon */
+        text-align: center; /* Это может быть избыточно, но оставлено для совместимости */
+    }
+    .main_text {
+        font-size: 16px;
+    }
+    }  

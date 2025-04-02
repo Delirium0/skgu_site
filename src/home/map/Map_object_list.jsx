@@ -8,7 +8,7 @@ const Map_object_list = ({ points, selectedPoint, handlePointClick }) => {
 
   return (
     <div>
-      <h3>Список объектов:</h3>
+      <h3 className='object-card-list-title'>Список объектов:</h3>
       <div className="object-card-list"> {/* Используем div для списка карточек */}
         {points.map((point, index) => (
           <Object_card

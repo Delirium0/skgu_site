@@ -6,6 +6,7 @@ import Search from "./search/Search";
 import cl from './Main.module.css'
 import Location from './locations/Location.jsx'
 import Account from "./account/Account.jsx";
+import Subject_page from "./account/Subject_page.jsx";
 function App() {
  
   return (
@@ -19,7 +20,9 @@ function App() {
       <Route path='/' element={<Home/>}> </Route>
       <Route path='/search' element={<Search></Search>}></Route>
       <Route path='/account' element={<Account></Account>}></Route>
+      <Route path='/raiting' element={<Subject_page></Subject_page>}></Route>
       <Route path='/location/:id' element={<Location></Location>}></Route>
+
     </Routes>
     </div>
     </div>

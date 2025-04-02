@@ -37,7 +37,7 @@ const Object_card = ({point, isSelected, handlePointClick}) => {
       </div>
       <div className="main_info_block">
         <div className={cl.text_and_icon}>
-          <div className={cl.text}>{point.title}</div>
+        <div className={`${cl.text} ${cl.main_text}`}>{point.title}</div>
         </div>
         <div className={cl.text_and_icon}>
           {svgIconStar && <div className={cl.icon}>{svgIconStar}</div>}

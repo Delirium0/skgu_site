@@ -48,7 +48,6 @@
   .text_and_icon {
     display: flex;
     align-items: center; /* Выравнивание по вертикали */
-    padding-left: 10px;
   }
 
   .icon_text {
@@ -68,3 +67,36 @@
     justify-content: space-between;
     align-items: center;
   }
+
+  
+  @media (max-width: 425px) {
+    .header_down_info {
+      display: -webkit-box; /* Включаем поддержку блочной модели для обрезки текста */
+      -webkit-line-clamp: 3; /* Устанавливаем максимальное количество строк */
+      -webkit-box-orient: vertical; /* Вертикальная ориентация текста */
+      overflow: hidden; /* Скрываем текст, выходящий за пределы */
+      text-overflow: ellipsis; /* Добавляем многоточие */
+      font-size: 16px; /* Размер шрифта */
+      line-height: 1.1; /* Межстрочный интервал */
+      max-height: calc(1.4em * 2); /* Ограничиваем высоту в зависимости от количества строк */
+      color: rgb(247, 252, 248); /* Цвет текста */
+      font-family: 'Inter', sans-serif; /* Шрифт */
+      padding-right: 0px;
+      min-height: 34px;
+      margin: 0px;
+      margin-top: 20px;
+  }
+  
+  
+  .svg_time {
+    fill: white;
+    width: 36px;
+    height: 33px;
+  }
+  .text_and_icon {
+    padding-left: 0px;
+  }
+  .down_info_and_button {
+    flex-direction: column; /* Изменяем направление flex на колонку */
+    align-items: flex-start; /* Выравниваем элементы по левому краю (началу контейнера) */}
+  }  

@@ -2,6 +2,7 @@ import React from "react";
 import "./Down_menu.css";
 import Button from "./Button";
 import Event_text_and_icon from "./Event_text_and_icon";
+import cl from './new.module.css'
 const Down_info_block = ({ time, raiting, event_name }) => {
   const svgIconStar = (
     <svg className="svg_time">
@@ -9,7 +10,7 @@ const Down_info_block = ({ time, raiting, event_name }) => {
     </svg>
   );
   const svgIconClock = (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
       <path d="M12 17.3l-5.1 2.7q-.575.275-1.05-.1-.475-.375-.375-1.025l1-5.95-4.3-4.175q-.5-.475-.325-1.05.175-.575.825-.675l5.975-.875L10.8 1.7q.275-.575.975-.575T12.8 1.7l2.675 5.5 5.975.875q.65.1.825.675.175.575-.325 1.05L17.65 14l1 5.95q.1.65-.375 1.025-.475.375-1.05.1Z" />
     </svg>
   );
@@ -34,7 +35,9 @@ const Down_info_block = ({ time, raiting, event_name }) => {
 
             </div>
 
-         <Button>Подробнее</Button>
+            <button className={cl.new_button} >
+              Подробнее
+    </button>
         </div>
       </div>
     </div>
