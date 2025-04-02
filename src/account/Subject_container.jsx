@@ -46,8 +46,8 @@ const Subject_container = ({currentSubjectData}) => {
        <div className={cl.arrow_list} style={{ transform: isDropdownOpen ? 'scaleY(-0.7)' : 'scaleY(0.7)' }}>▼</div>
       </div>
       <div className={cl.another_container}>
-        <ArrowUpSvg className={cl.progress_icon} />
-        <div className={cl.number_container}>{currentSubjectData.average_grade}</div> {/* Use average_grade here */}
+        <ArrowUpSvg className={cl.progress_icon} /> {/* Стрелка все еще будет справа, пока не поменяем порядок */}
+        <div className={cl.number_container}>{currentSubjectData.average_grade}</div>
       </div>
 
       {isDropdownOpen && (

@@ -50,7 +50,7 @@
     overflow: auto;
     justify-content: center; /* Центрируем содержимое по горизонтали */
     align-items: center; /* Центрируем содержимое по вертикали */
-    flex-direction: column; /* Располагаем стрелку и число вертикально */
+    flex-direction: row; /* Располагаем стрелку и число горизонтально */
     color: white;
 }
 
@@ -58,6 +58,7 @@
     width: 31px;
     height: 31px;
     object-fit: contain;
+
 }
 
 .progress_icon g {
@@ -124,7 +125,7 @@
     }
 
     .subject_title {
-        font-size: 16px; /* Уменьшим размер заголовка на телефонах */
+        font-size: 12px; /* Уменьшим размер заголовка на телефонах */
     }
 
     .teacher_name {
