@@ -17,30 +17,32 @@ const Building_contrainer = ({ point }) => {
   };
   return (
     <div
-      className={`card`}
+      className={cl.cardqefqef}
       // onClick={() => handlePointClick(point)}
     >
-      <div className="svg_block">
-        <img src={point.main_icon} alt="иконка" className={cl.main_icon} />
-      </div>
-      <div className="main_info_block">
-        <div className={cl.text_and_icon}>
-          <div className={cl.main_text}>{point.title}</div>
+      <div className={cl.image_text_wrapper}> {/*  Добавляем обертку */}
+        <div className="svg_block">
+          <img src={point.main_icon} alt="иконка" className={cl.main_icon} />
         </div>
-        <div className={cl.text_and_icon}>
-          {/* <img
-            src={svgclock}
-            alt="время работы"
-            className={cl.suggestionIcon}
-          /> */}
-          <span className={cl.text_time}>{point.time_start}</span>
-          <span className={cl.text_time}>{point.time_end}</span>
+        <div className="main_info_block">
+          <div className={cl.text_and_icon}>
+            <div className={cl.main_text}>{point.title}</div>
+          </div>
+          <div className={cl.text_and_icon}>
+            {/* <img
+              src={svgclock}
+              alt="время работы"
+              className={cl.suggestionIcon}
+            /> */}
+            <span className={cl.text_time}>{point.time_start}</span>
+            <span className={cl.text_time}>{point.time_end}</span>
+          </div>
+          <div className={cl.text_and_icon}>
+            {/* <img src={svg_geo_marker} alt="адрес" className={cl.suggestionIcon} /> */}
+            <div className={cl.text_geo}>{point.address}</div>
+          </div>
         </div>
-        <div className={cl.text_and_icon}>
-          {/* <img src={svg_geo_marker} alt="адрес" className={cl.suggestionIcon} /> */}
-          <div className={cl.text_geo}>{point.address}</div>
-        </div>
-      </div>
+      </div> {/*  Закрываем обертку */}
       <div className={cl.button_dop_info}>
       <Button onClick={handleClick}> Подробнее</Button>
       </div>

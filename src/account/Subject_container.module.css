@@ -163,7 +163,7 @@
 
     .dropdown_grade_number {
         font-size: 12px; /* Возвращаем размер номера модуля как на десктопе */
-        padding-right: 10px; /* Возвращаем отступ номера модуля от разделителя как на десктопе */
+        /* padding-right: 10px; */
     }
 
     .dropdown_grade_value {
@@ -266,7 +266,7 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding-right: 10px;
+    /* padding-right: 10px; */
     justify-content: flex-start; /* Выравниваем элементы в начале ряда */
 }
 
@@ -279,15 +279,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5px 10px;
+    padding: 0px 10px;
     border-radius: 8px;
     background-color: #2e2e2e;
     /* min-width: 40px;  Убираем min-width чтобы элемент мог расширяться */
     text-align: center;
     white-space: nowrap;
     position: relative; /* Для позиционирования разделителя */
-    padding-right: 20px; /* Увеличим padding справа, чтобы был отступ для разделителя и оценок */
-    padding-left: 20px; /* Симметричный padding слева */
+    padding-right: 20px; 
+    padding-left: 20px; 
 }
 
 /* Разделитель справа от номера модуля */
@@ -311,7 +311,7 @@
     font-size: 12px;
     color: #aaa;
     margin-bottom: 2px;
-    padding-right: 10px; /* Отступ справа от номера, чтобы отделить от разделителя */
+    /* padding-right: 10px;  */
 }
 
 .dropdown_grade_value {
@@ -327,7 +327,7 @@
 @media (max-width: 768px) {
     .dropdown_list {
         width: 95%; /* Корректировка ширины на телефонах */
-        margin-left: 5px;
+        /* margin-left: 5px; */
     }
 
     .dropdown_item {
