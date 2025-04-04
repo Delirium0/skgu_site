@@ -10,6 +10,8 @@ import Subject_page from "./account/Subject_page.jsx";
 import Links from "./account/links/Links.jsx";
 import AuthPage from "./auth/AuthPage.jsx";
 import Schedule from "./account/schedule/Schedule.jsx";
+import AccountRoute from "./account/schedule/AccountRoute.jsx";
+import NextLessonRoute from "./account/schedule/NextLessonRoute.jsx";
 function App() {
  
   return (
@@ -26,6 +28,8 @@ function App() {
       <Route path='/raiting' element={<Subject_page></Subject_page>}></Route>
       <Route path='/links' element={<Links></Links>}></Route>
       <Route path='/auth' element={<AuthPage></AuthPage>}></Route>
+      <Route path='/schedule_actual' element={<AccountRoute></AccountRoute>}></Route>
+      <Route path='/next_lesson' element={<NextLessonRoute></NextLessonRoute>}></Route>
       <Route path='/schedule' element={<Schedule></Schedule>}></Route>
       <Route path='/location/:id' element={<Location></Location>}></Route>
 

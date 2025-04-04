@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import styles from './Schedule.module.css'; // Импортируйте CSS Modules
 import DesktopScheduleTable from './DesktopScheduleTable';
 import MobileScheduleCards from './MobileScheduleCards'; // Import the new MobileScheduleCards component
+import AccountBlock from '../AccountBlock';
+import { ReactComponent as ScheduleSVG } from './../../assets/svg/calendar-days-svgrepo-com.svg';
 
 const Schedule = () => {
     // **Важно:** В реальном приложении логин и пароль пользователя не должны быть жестко закодированы.
@@ -10,6 +12,8 @@ const Schedule = () => {
     const userLogin = 'IS3001'; // Замените на логин пользователя
     const userPass = '3kzs7s8n'; // Замените на пароль пользователя
     const apiUrl = `http://127.0.0.1:8000/schedule/schedule/?user_login=${userLogin}&user_pass=${userPass}`;
+    const link_actual_schedule =     { name: "Текущее занятие", linkTo: "/schedule_actual", SvgComponent: ScheduleSVG }
+    const link_next_schedule =     { name: "Следующее занятие", linkTo: "/next_lesson", SvgComponent: ScheduleSVG }
 
     const [scheduleData, setScheduleData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -68,6 +72,10 @@ const Schedule = () => {
 
     return (
         <div className={`${styles.schedulePage} ${styles.page_block}`}>
+            <div className={styles.schedule_next_and_actual}> <AccountBlock blockInfo ={link_actual_schedule}></AccountBlock>
+        <AccountBlock blockInfo ={link_next_schedule}></AccountBlock>
+</div>
+       
             <div className={styles.page_content}>
                 <h1 className={styles.scheduleHeader}>Расписание</h1>
 

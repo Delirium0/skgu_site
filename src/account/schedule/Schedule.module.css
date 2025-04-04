@@ -5,7 +5,11 @@
     padding-top: 30px;
     padding-bottom: 60px; /* Под футер */
 }
-
+.schedule_next_and_actual {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
 .scheduleHeader {
     margin-left: 26px;
     color: rgb(247, 252, 248);
