@@ -1,0 +1,121 @@
+/* Links.module.css */
+
+.main_block{
+    min-height: 100vh;
+    background-color: rgb(21, 21, 21);
+    padding-bottom: 60px;
+    padding-top: 10px;
+}
+.account_block{ /* Если хотите использовать account_block стиль */
+    min-height: 100vh;
+    background-color: rgb(21, 21, 21);
+    padding-bottom: 60px;
+    padding-top: 10px;
+}
+
+
+.account_container {
+    display: flex;
+    flex-direction: column; /* Изменили на column для вертикального расположения */
+    align-items: center; /* Центрирование по горизонтали */
+    gap: 15px; /* Уменьшили gap для более плотного расположения */
+    padding: 20px;
+    background-color: rgb(21, 21, 21); /* Фон контейнера, если нужен */
+}
+
+.faculties {
+    width: 100%; /* Растягиваем на всю ширину контейнера */
+    height: 60px; /* Высота овала */
+    background-color: rgb(46, 46, 46);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    margin-top: 0;
+    border-radius: 30px; /* Делаем овал за счет большого border-radius */
+    overflow: hidden; /* Обрезаем контент, если выходит за границы овала */
+
+    display: flex;
+    flex-direction: row; /* Располагаем элементы в ряд (иконка, текст, стрелка) */
+    align-items: center; /* Центрирование по вертикали */
+    justify-content: left; /* Выравнивание контента слева */
+    padding: 0 20px; /* Отступы слева и справа внутри овала */
+    color: white;
+    text-decoration: none; /* Убираем подчеркивание у ссылок */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease; /* Плавный переход для hover эффекта */
+}
+
+.faculties:hover { /* Эффект при наведении мыши (опционально) */
+    background-color: rgb(60, 60, 60); /* Чуть светлее при наведении */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Тень чуть больше */
+}
+
+.faculty_icon {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-right: 10px; /* Отступ между иконкой и текстом */
+    margin-bottom: 0; /* Убираем margin-bottom */
+}
+
+.faculty_icon svg {
+    width: 24px; /* Уменьшили размер иконки */
+    height: 24px; /* Уменьшили размер иконки */
+    object-fit: contain;
+    fill: white; /* Задаем белый цвет для SVG иконки */
+}
+
+.faculties div {
+    padding: 0; /* Убираем padding для текста, чтобы лучше выровнять */
+    text-align: left; /* Выравниваем текст по левому краю */
+    white-space: normal; /* Позволяет тексту переноситься */
+    overflow: hidden; /* Обрезаем лишний текст */
+    text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезан */
+    word-wrap: break-word; /* Позволяет переносить длинные слова */
+    max-height: calc(1.2em * 5); /* Ограничиваем высоту по 5 строк */
+}
+.left_block{ 
+    display: flex;
+
+}
+/* Добавляем стрелку справа */
+.right_block {
+    display: flex;
+    content: '➔'; /* Символ стрелки (можно использовать SVG иконку вместо символа) */
+    margin-left: auto; /* Отодвигаем стрелку к правому краю */
+    font-size: 1.5em; /* Размер стрелки */
+    color: white; /* Цвет стрелки */
+    transition: opacity 0.2s ease; /* Плавный переход для opacity */
+    justify-content: right;
+}
+
+.faculties:hover::after {
+    opacity: 1; /* Делаем стрелку более видимой при наведении */
+}
+
+
+/* Адаптивные стили для телефонов */
+@media (max-width: 425px) {
+    .link_text { 
+        font-size: 12px;
+    }
+    .account_container {
+        justify-content: left;
+        gap: 10px;
+    }
+    .faculties {
+        max-width: 95%; /* Овалы занимают почти всю ширину экрана на телефонах */
+        height: 50px; /* Уменьшаем высоту на телефонах */
+        padding: 0 15px; /* Уменьшаем отступы на телефонах */
+        border-radius: 25px; /* Соответствующий border-radius для высоты */
+    }
+
+    .faculty_icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .faculty_icon {
+        margin-right: 5px;
+    }
+
+
+}

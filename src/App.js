@@ -7,6 +7,9 @@ import cl from './Main.module.css'
 import Location from './locations/Location.jsx'
 import Account from "./account/Account.jsx";
 import Subject_page from "./account/Subject_page.jsx";
+import Links from "./account/links/Links.jsx";
+import AuthPage from "./auth/AuthPage.jsx";
+import Schedule from "./account/schedule/Schedule.jsx";
 function App() {
  
   return (
@@ -21,6 +24,9 @@ function App() {
       <Route path='/search' element={<Search></Search>}></Route>
       <Route path='/account' element={<Account></Account>}></Route>
       <Route path='/raiting' element={<Subject_page></Subject_page>}></Route>
+      <Route path='/links' element={<Links></Links>}></Route>
+      <Route path='/auth' element={<AuthPage></AuthPage>}></Route>
+      <Route path='/schedule' element={<Schedule></Schedule>}></Route>
       <Route path='/location/:id' element={<Location></Location>}></Route>
 
     </Routes>
