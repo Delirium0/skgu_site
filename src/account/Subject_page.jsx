@@ -1,59 +1,67 @@
-import React, { useState, useEffect } from 'react'; // Импортируем useState и useEffect
-import axios from 'axios'; // Импортируем axios
-import cl from './Account.module.css'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import cl from './Account.module.css';
 import Subject_container from './Subject_container';
 import Footer from '../Components/Footer/Footer';
+import { useAuth } from '../auth/AuthProvider';
 const Subject_page = () => {
-    const [subjectData, setSubjectData] = useState(null); // useState для хранения данных с сервера, изначально null
-    const [loading, setLoading] = useState(true); // useState для отслеживания состояния загрузки
-    const [error, setError] = useState(null); // useState для хранения ошибок
-
+    const [subjectData, setSubjectData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { user } = useAuth(); // Используем хук useAuth для получения информации о пользователе
+    const token = user?.token; // Получаем токен пользователя
+    console.log(token)
     useEffect(() => {
         const fetchSubjectData = async () => {
-            setLoading(true); // Устанавливаем loading в true перед запросом
-            setError(null); // Сбрасываем ошибку перед новым запросом
+            setLoading(true);
+            setError(null);
             try {
-             
-                const userLogin = 'ваш_логин'; // Замени на реальный логин
-                const userPass = 'ваш_пароль'; // Замени на реальный пароль
-
                 const response = await axios.post(
-                    `${process.env.REACT_APP_API_URL}/schedule/evaluations/`, // Используем POST, как указано в эндпоинте
-                    {}, // Тело запроса пустое, так как параметры передаются через query
+                    `${process.env.REACT_APP_API_URL}/schedule/evaluations/`,
+                    {}, // Тело запроса пустое
                     {
-                        params: { // Передаем параметры user_login и user_pass как query параметры
-                            user_login: userLogin,
-                            user_pass: userPass,
+                        headers: {
+                            'Authorization': `Bearer ${token}`, // Добавляем заголовок Authorization с токеном
+                            'Content-Type': 'application/json', // Явно указываем тип контента, хотя axios ставит его автоматически для POST с пустым body
                         },
                     }
                 );
-                setSubjectData(response.data); // Обновляем состояние данными, полученными от сервера
+                setSubjectData(response.data);
             } catch (err) {
-                setError(err); // В случае ошибки записываем её в состояние error
+                if (err.response && err.response.status === 401) {
+                    setError(new Error('Необходимо авторизоваться.')); // Обработка 401 ошибки
+                } else {
+                    setError(err); // Обработка других ошибок
+                }
             } finally {
-                setLoading(false); // В любом случае, после запроса устанавливаем loading в false
+                setLoading(false);
             }
         };
 
-        fetchSubjectData(); // Вызываем функцию для запроса данных при монтировании компонента
-    }, []); // Пустой массив зависимостей означает, что useEffect выполнится только один раз при монтировании
+        if (token) { // **Важно:** Запрос данных только если есть токен
+            fetchSubjectData();
+        } else {
+            setError(new Error('Токен авторизации отсутствует.')); // Сообщение об ошибке, если нет токена
+            setLoading(false);
+        }
+    }, [token]); // Добавляем token в зависимости useEffect
 
     if (loading) {
-        return <div>Загрузка данных...</div>; // Отображаем сообщение о загрузке, пока данные не загружены
+        return <div>Загрузка данных...</div>;
     }
 
     if (error) {
-        console.error("Ошибка при загрузке данных:", error); // Логируем ошибку в консоль для отладки
-        return <div>Ошибка загрузки данных. Пожалуйста, обновите страницу.</div>; // Отображаем сообщение об ошибке пользователю
+        console.error("Ошибка при загрузке данных:", error);
+        return <div>Ошибка загрузки данных: {error.message}. Пожалуйста, обновите страницу.</div>;
     }
 
-    if (!subjectData) {
-        return <div>Данные не получены.</div>; // Сообщение, если данные не были получены (например, пустой ответ от сервера)
+    if (!subjectData || subjectData.length === 0) { // Проверка на случай, если `subjectData` - массив
+        return <div>Данные не получены.</div>;
     }
 
     return (
         <div className={cl.account_block}>
-            {subjectData.map(subject_info => (
+            {Array.isArray(subjectData) && subjectData.map(subject_info => ( // Безопасная проверка и итерация
                 <Subject_container key={subject_info.subject_name} currentSubjectData={subject_info} />
             ))}
             <Footer></Footer>

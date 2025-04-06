@@ -1,14 +1,18 @@
+// src/components/NextLessonRoute.jsx (предположительно, путь к файлу, исходя из структуры Schedule)
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Map from "../../home/map/Map";
 import Search_results from "../../search/search_results/Search_results";
-import styles from './Schedule.module.css';
+import styles from './Schedule.module.css'; // Убедитесь, что путь к стилям верный
 import Footer from "../../Components/Footer/Footer";
+import { useAuth } from '../../auth/AuthProvider'; // Импортируем useAuth
 
 const NextLessonRoute = () => {
-    const userLogin = 'IS3001';
-    const userPass = '3kzs7s8n';
-    const apiUrl = `http://127.0.0.1:8000/schedule/schedule/?user_login=${userLogin}&user_pass=${userPass}`;
+    const { user } = useAuth(); // Используем хук useAuth для получения информации о пользователе
+    const token = user?.token; // Получаем токен пользователя
+    console.log(token)
+
+    const apiUrl = `${process.env.REACT_APP_API_URL}/schedule/schedule/`; // URL без параметров логина и пароля
 
     const [scheduleData, setScheduleData] = useState(null);
     const [loadingSchedule, setLoadingSchedule] = useState(true);
@@ -18,7 +22,7 @@ const NextLessonRoute = () => {
     const [point, setPoint] = useState(null);
     const [centerPoint, setCenterPoint] = useState(null);
     const start = "1_entrance";
-    const [nextLessonRoom, setNextLessonRoom] = useState(null); // Renamed state to nextLessonRoom
+    const [nextLessonRoom, setNextLessonRoom] = useState(null);
 
     useEffect(() => {
         const fetchSchedule = async () => {
@@ -28,12 +32,17 @@ const NextLessonRoute = () => {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Добавляем заголовок Authorization с токеном
                     },
-                    body: JSON.stringify({})
+                    body: JSON.stringify({}) // Тело запроса, если требуется
                 });
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (response.status === 401) {
+                        setScheduleError(new Error('Необходимо авторизоваться.'));
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 }
                 const data = await response.json();
                 setScheduleData(data);
@@ -44,8 +53,13 @@ const NextLessonRoute = () => {
             }
         };
 
-        fetchSchedule();
-    }, [apiUrl]);
+        if (token) { // **Важно:** Запрос расписания только если есть токен
+            fetchSchedule();
+        } else {
+            setScheduleError(new Error('Токен авторизации отсутствует.'));
+            setLoadingSchedule(false);
+        }
+    }, [apiUrl, token]); // Добавляем token в зависимости useEffect
 
     const getNextLessonRoom = () => {
         if (!scheduleData || !scheduleData.results || scheduleData.results.length === 0) {
@@ -101,10 +115,10 @@ const NextLessonRoute = () => {
 
     useEffect(() => {
         if (!scheduleData || loadingSchedule || scheduleError) return;
-        const nextLessonInfo = getNextLessonRoom(); // Renamed to nextLessonInfo
+        const nextLessonInfo = getNextLessonRoom();
         console.log(nextLessonInfo);
 
-        setNextLessonRoom(nextLessonInfo); // Set state with nextLessonInfo
+        setNextLessonRoom(nextLessonInfo);
 
         if (nextLessonInfo && nextLessonInfo.roomNumber) {
             axios
@@ -153,7 +167,7 @@ const NextLessonRoute = () => {
             setCenterPoint(null);
             setFloorsData([]);
         }
-    }, [scheduleData, loadingSchedule, scheduleError]);
+    }, [scheduleData, loadingSchedule, scheduleError, token]); // Важно добавить token в зависимости useEffect
 
 
     if (loadingSchedule) {
@@ -171,8 +185,8 @@ const NextLessonRoute = () => {
 
     return (
         <div className={`${styles.schedulePage} ${styles.page_block}`}>
-            <h2>Маршрут к следующему занятию</h2> {/* Updated heading */}
-            {nextLessonRoom ? ( // Updated to use nextLessonRoom state
+            <h2>Маршрут к следующему занятию</h2>
+            {nextLessonRoom ? (
                 <>
                     <p>
                         Следующее занятие в кабинете: {nextLessonRoom?.roomNumber}

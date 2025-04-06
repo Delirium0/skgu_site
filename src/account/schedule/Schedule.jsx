@@ -2,16 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Schedule.module.css'; // Импортируйте CSS Modules
 import DesktopScheduleTable from './DesktopScheduleTable';
-import MobileScheduleCards from './MobileScheduleCards'; // Import the new MobileScheduleCards component
+import MobileScheduleCards from './MobileScheduleCards';
 import AccountBlock from '../AccountBlock';
 import { ReactComponent as ScheduleSVG } from './../../assets/svg/calendar-days-svgrepo-com.svg';
-
+import { useAuth } from '../../auth/AuthProvider';
 const Schedule = () => {
-    // **Важно:** В реальном приложении логин и пароль пользователя не должны быть жестко закодированы.
-    // Их нужно получать безопасно, например, из состояния приложения после авторизации пользователя.
-    const userLogin = 'IS3001'; // Замените на логин пользователя
-    const userPass = '3kzs7s8n'; // Замените на пароль пользователя
-    const apiUrl = `http://127.0.0.1:8000/schedule/schedule/?user_login=${userLogin}&user_pass=${userPass}`;
+    const { user } = useAuth();
+    const token = user?.token;
+    console.log(token)
+    const apiUrl = `${process.env.REACT_APP_API_URL}/schedule/schedule/`; // URL без параметров логина и пароля
     const link_actual_schedule =     { name: "Текущее занятие", linkTo: "/schedule_actual", SvgComponent: ScheduleSVG }
     const link_next_schedule =     { name: "Следующее занятие", linkTo: "/next_lesson", SvgComponent: ScheduleSVG }
 
@@ -25,14 +24,21 @@ const Schedule = () => {
             setError(null);
             try {
                 const response = await fetch(apiUrl, {
-                    method: 'POST', // Используем POST запрос, как указано в роутере
+                    method: 'POST', 
                     headers: {
-                        'Content-Type': 'application/json' // Указываем тип контента, хотя тело запроса пустое
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Добавляем заголовок Authorization с токеном
                     },
-                    body: JSON.stringify({}) // Тело запроса пустое, параметры передаются в query
+                    body: JSON.stringify({})
+
                 });
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (response.status === 401) {
+                        // Если 401 Unauthorized, возможно, токен истек или недействителен
+                        setError(new Error('Необходимо авторизоваться.'));
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 }
                 const data = await response.json();
                 setScheduleData(data);
@@ -43,8 +49,13 @@ const Schedule = () => {
             }
         };
 
-        fetchSchedule();
-    }, [apiUrl]);
+        if (token) { // **Важно:** Запрос расписания только если есть токен
+            fetchSchedule();
+        } else {
+            setError(new Error('Токен авторизации отсутствует.')); // Сообщение об ошибке, если нет токена
+            setLoading(false);
+        }
+    }, [apiUrl, token]); // Добавьте token в зависимости useEffect
 
     if (loading) {
         return <p className={styles.loading}>Загрузка расписания...</p>;
@@ -58,7 +69,7 @@ const Schedule = () => {
         return <p className={styles.noSchedule}>Расписание не найдено.</p>;
     }
 
-    // Группировка расписания по дням недели
+    // Группировка расписания по дням недели (остается без изменений)
     const scheduleByDay = {};
     const daysOfWeekOrder = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"];
 
@@ -75,7 +86,7 @@ const Schedule = () => {
             <div className={styles.schedule_next_and_actual}> <AccountBlock blockInfo ={link_actual_schedule}></AccountBlock>
         <AccountBlock blockInfo ={link_next_schedule}></AccountBlock>
 </div>
-       
+
             <div className={styles.page_content}>
                 <h1 className={styles.scheduleHeader}>Расписание</h1>
 

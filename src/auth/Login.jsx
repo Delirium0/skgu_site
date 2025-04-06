@@ -1,25 +1,79 @@
-// Login.js
-import React from 'react';
-import styles from './AuthPage.module.css'; // Импортируем CSS Module
-
+/// Login.js
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './AuthPage.module.css';
+import { useAuth } from './AuthProvider';
 const Login = () => {
-    const handleLogin = (event) => {
-        event.preventDefault(); // Предотвращаем стандартную отправку формы
-        const login = event.target.login.value;
+    const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const navigate = useNavigate();
+    const { login } = useAuth(); // Используем useAuth хук, чтобы получить login функцию из вашего контекста
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        const userLogin = event.target.login.value; // Переименуем переменную login, чтобы не конфликтовало с функцией login из контекста
         const password = event.target.password.value;
 
-        if (!login || !password) {
-            alert('Пожалуйста, заполните все поля для входа.');
+        if (!userLogin || !password) {
+            setMessage('Пожалуйста, заполните все поля для входа.');
+            setIsSuccess(false);
             return;
         }
 
-        // Заглушка запроса авторизации
-        console.log('Выполнен POST запрос на авторизацию:');
-        console.log('Эндпоинт:', `${process.env.REACT_APP_API_URL}/schedule/evaluations/`); // Предполагаемый эндпоинт
-        console.log('Query параметры:', { user_login: login, user_pass: password });
+        setMessage('Выполняется авторизация...');
+        setIsSuccess(null);
 
-        // Здесь будет реальный запрос к API и обработка ответа
-        alert('Авторизация выполнена (заглушка). Смотрите детали запроса в консоли.');
+        try {
+            const apiUrl = `${process.env.REACT_APP_API_URL}/auth/login`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ login: userLogin, password: password }) // Используем userLogin здесь
+            });
+
+            if (!response.ok) {
+                let errorMessage = 'Ошибка авторизации';
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.detail) {
+                        errorMessage = errorData.detail;
+                    }
+                } catch (jsonError) {
+                    console.error('Ошибка при чтении JSON ошибки:', jsonError);
+                }
+                setMessage(errorMessage);
+                setIsSuccess(false);
+                return;
+            }
+
+            const responseData = await response.json();
+            const token = responseData.access_token;
+
+            if (token) {
+                const userData = {
+                    token: token,
+                    login: userLogin,
+                };
+                login(userData); // Вызываем функцию login из вашего AuthContext и передаем объект userData
+                setMessage('Авторизация успешна!');
+                setIsSuccess(true);
+                setTimeout(() => {
+                    navigate('/');
+                }, 1500);
+            } else {
+                setMessage('Успешная авторизация, но токен не получен.');
+                setIsSuccess(false);
+            }
+
+            console.log('Успешная авторизация. Ответ сервера:', responseData);
+
+        } catch (error) {
+            console.error('Ошибка при выполнении запроса на авторизацию:', error);
+            setMessage('Произошла ошибка при авторизации. Пожалуйста, попробуйте позже.');
+            setIsSuccess(false);
+        }
     };
 
     return (
@@ -34,6 +88,12 @@ const Login = () => {
                     <input type="password" id="password" name="password" placeholder="Введите пароль" />
                 </div>
                 <button type="submit" className={styles.authButton}>Войти</button>
+
+                {message && (
+                    <div className={`${styles.message} ${isSuccess === true ? styles.success : isSuccess === false ? styles.error : ''}`}>
+                        {message}
+                    </div>
+                )}
             </form>
         </div>
     );

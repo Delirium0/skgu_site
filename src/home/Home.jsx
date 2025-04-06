@@ -11,6 +11,7 @@ import RatingDisplay from './raiting/RatingDisplay'
 import Map from "./map/Map";
 import Map_contrainer from "./map/Map_contrainer";
 import Footer from "../Components/Footer/Footer";
+import Header from "../Components/header/Header";
 const Home = () => {
   const [event, setEvent] = useState({
     id: 1,

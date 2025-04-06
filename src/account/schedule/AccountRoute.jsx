@@ -1,14 +1,18 @@
+// src/components/AccountRoute.jsx (предположительно, путь к файлу, исходя из структуры Schedule)
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Map from "../../home/map/Map";
 import Search_results from "../../search/search_results/Search_results";
-import styles from './Schedule.module.css';
+import styles from './Schedule.module.css'; // Убедитесь, что путь к стилям верный
 import Footer from "../../Components/Footer/Footer";
+import { useAuth } from '../../auth/AuthProvider'; // Импортируем useAuth
 
 const AccountRoute = () => {
-    const userLogin = 'IS3001';
-    const userPass = '3kzs7s8n';
-    const apiUrl = `http://127.0.0.1:8000/schedule/schedule/?user_login=${userLogin}&user_pass=${userPass}`;
+    const { user } = useAuth(); // Используем хук useAuth для получения информации о пользователе
+    const token = user?.token; // Получаем токен пользователя
+    console.log(token)
+
+    const apiUrl = `${process.env.REACT_APP_API_URL}/schedule/schedule/`; // URL без параметров логина и пароля
 
     const [scheduleData, setScheduleData] = useState(null);
     const [loadingSchedule, setLoadingSchedule] = useState(true);
@@ -28,12 +32,17 @@ const AccountRoute = () => {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Добавляем заголовок Authorization с токеном
                     },
                     body: JSON.stringify({})
                 });
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (response.status === 401) {
+                        setScheduleError(new Error('Необходимо авторизоваться.'));
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 }
                 const data = await response.json();
                 setScheduleData(data);
@@ -44,8 +53,13 @@ const AccountRoute = () => {
             }
         };
 
-        fetchSchedule();
-    }, [apiUrl]);
+        if (token) { // **Важно:** Запрос расписания только если есть токен
+            fetchSchedule();
+        } else {
+            setScheduleError(new Error('Токен авторизации отсутствует.'));
+            setLoadingSchedule(false);
+        }
+    }, [apiUrl, token]); // Добавляем token в зависимости useEffect
 
     const getCurrentLessonRoom = () => {
         if (!scheduleData || !scheduleData.results || scheduleData.results.length === 0) {
@@ -152,7 +166,7 @@ const AccountRoute = () => {
             setCenterPoint(null);
             setFloorsData([]);
         }
-    }, [scheduleData, loadingSchedule, scheduleError]);
+    }, [scheduleData, loadingSchedule, scheduleError, token]); // Важно добавить token в зависимости useEffect
 
 
     if (loadingSchedule) {

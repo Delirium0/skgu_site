@@ -1,0 +1,11 @@
+/* PageLayout.module.css */
+.pageLayout {
+    display: flex;
+    flex-direction: column; /* Чтобы хедер и контент располагались вертикально */
+  }
+  
+  .content {
+    padding-top: 60px; /*  Замените 80px на фактическую высоту вашего хедера (или чуть больше) */
+    box-sizing: border-box; /* Важно для правильного расчета padding */
+    /* Другие стили для main контента, если нужно */
+  }

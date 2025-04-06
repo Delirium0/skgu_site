@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Login from './Login';
 import Registration from './Registration';
 import styles from './AuthPage.module.css'; // Импортируем CSS Module
-
+import Footer from '../Components/Footer/Footer';
 const AuthPage = () => {
     const [isLoginMode, setIsLoginMode] = useState(true);
 
@@ -28,6 +28,7 @@ const AuthPage = () => {
                     )} */}
                 </div>
             </div>
+            <Footer></Footer>
         </div>
     );
 };
