@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import event_background from "./events/1111.png";
 import event_creator_image from "./events/ава.png";
 import "./../Main.css";
@@ -12,18 +12,51 @@ import Map from "./map/Map";
 import Map_contrainer from "./map/Map_contrainer";
 import Footer from "../Components/Footer/Footer";
 import Header from "../Components/header/Header";
+import { useAuth } from "../auth/AuthProvider";
 const Home = () => {
-  const [event, setEvent] = useState({
-    id: 1,
-    image_background: event_background,
-    event_creator_name: "Vyachesla Savinkov",
-    event_creator_image: event_creator_image,
-    event_raiting: 4.2,
-    event_time: new Date("2025-02-26T18:00:00"),
-    event_name: "Защита диплома технологические инструменты",
-  });
 
-  const events = Array(5).fill(event);
+  const [events, setEvents] = useState([]); // Изначально ивенты - пустой массив
+  const [loadingEvents, setLoadingEvents] = useState(true); // Состояние загрузки ивентов
+  const [errorEvents, setErrorEvents] = useState(null); // Состояние ошибки загрузки ивентов
+  const { user } = useAuth(); // Получаем данные пользователя и токен из контекста аутентификации
+  const token = user?.token; // Получаем токен
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoadingEvents(true); // Начинаем загрузку
+      setErrorEvents(null); // Сбрасываем ошибку
+
+      try {
+        const apiUrl = `${process.env.REACT_APP_API_URL}/events/`; // URL твоего эндпоинта для получения ивентов
+
+        const response = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Добавляем токен авторизации, если требуется
+            'Content-Type': 'application/json', // Указываем тип контента, если отправляем JSON
+          },
+        });
+
+        if (!response.ok) {
+          // Обработка HTTP ошибок
+          if (response.status === 401) {
+            setErrorEvents(new Error('Не авторизован. Пожалуйста, войдите в систему.'));
+          } else {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+          }
+          return; // Выходим из функции, чтобы не пытаться обрабатывать JSON в случае ошибки
+        }
+
+        const data = await response.json();
+        setEvents(data); // Обновляем состояние ивентов полученными данными
+      } catch (error) {
+        console.error("Ошибка при загрузке ивентов:", error);
+        setErrorEvents(error); // Устанавливаем ошибку в состояние
+      } finally {
+        setLoadingEvents(false); // Загрузка завершена (успешно или с ошибкой)
+      }
+    };
+
+    fetchEvents(); // Вызываем функцию загрузки ивентов при монтировании компонента
+  }, [token]); // Зависимость useEffect - токен, чтобы перезагружать ивенты при изменении токена (например, после логина)
   const svgIconBusinesFaculty = (
     <svg
       viewBox="0 0 24 24"

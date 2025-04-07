@@ -13,6 +13,8 @@ import Schedule from "./account/schedule/Schedule.jsx";
 import AccountRoute from "./account/schedule/AccountRoute.jsx";
 import NextLessonRoute from "./account/schedule/NextLessonRoute.jsx";
 import PageLayout from "./Components/pageLayout/PageLayout.jsx";
+import ARComponent from "./ar/ARComponent.jsx";
+import Events_create from "./account/events_create/Events_create.jsx";
 function App() {
   return (
     <div className="App">
@@ -65,6 +67,16 @@ function App() {
           <Route path='/location/:id' element={
             <PageLayout>
               <Location />
+            </PageLayout>
+          }></Route>
+          <Route path='/ar' element={
+            <PageLayout>
+              <ARComponent />
+            </PageLayout>
+          }></Route>
+            <Route path='/events_create' element={
+            <PageLayout>
+              <Events_create />
             </PageLayout>
           }></Route>
         </Routes>
