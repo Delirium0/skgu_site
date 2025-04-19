@@ -25,16 +25,16 @@ const Test = () => {
               sceneEl.addEventListener('targetFound', (event) => {
                 if (event.detail.targetIndex === 0) {
                   setRoomDescription('Кабинет 207: Отдел информационных систем');
-                  console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)'); // Вывод в консоль для 207
+                  console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)');
                 } else if (event.detail.targetIndex === 1) {
                   setRoomDescription('Кабинет 209: Описание для кабинета 209');
-                  console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)'); // Вывод в консоль для 209
+                  console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)');
                 }
               });
 
               sceneEl.addEventListener('targetLost', (event) => {
                 setRoomDescription(null);
-                console.log('Цель потеряна'); // Вывод в консоль при потере цели
+                console.log('Цель потеряна');
               });
             }
           };
@@ -52,16 +52,16 @@ const Test = () => {
             sceneEl.addEventListener('targetFound', (event) => {
               if (event.detail.targetIndex === 0) {
                 setRoomDescription('Кабинет 207: Отдел информационных систем');
-                console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)'); // Вывод в консоль для 207
+                console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)');
               } else if (event.detail.targetIndex === 1) {
                 setRoomDescription('Кабинет 209: Описание для кабинета 209');
-                console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)'); // Вывод в консоль для 209
+                console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)');
               }
             });
 
             sceneEl.addEventListener('targetLost', (event) => {
               setRoomDescription(null);
-              console.log('Цель потеряна'); // Вывод в консоль при потере цели
+              console.log('Цель потеряна');
             });
           }
         };
@@ -90,12 +90,7 @@ const Test = () => {
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
       >
-        <a-assets>
-          <a-asset-item
-            id="avatarModel"
-            src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softmind/scene.gltf"
-          ></a-asset-item>
-        </a-assets>
+        {/* Удалили блок <a-assets> */}
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
@@ -107,6 +102,7 @@ const Test = () => {
             geometry="primitive: plane; width: 2.1; height: auto"
             material="color: rgba(0, 0, 0, 0.7)"
           ></a-entity>
+          {/* Удалили <a-entity gltf-model="#avatarModel"> */}
         </a-entity>
 
         {/* Таргет для кабинета 209 */}
@@ -117,6 +113,7 @@ const Test = () => {
             geometry="primitive: plane; width: 2.1; height: auto"
             material="color: rgba(0, 0, 0, 0.7)"
           ></a-entity>
+          {/* Удалили <a-entity gltf-model="#avatarModel"> */}
         </a-entity>
 
       </a-scene>
