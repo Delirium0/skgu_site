@@ -15,7 +15,7 @@ import NextLessonRoute from "./account/schedule/NextLessonRoute.jsx";
 import PageLayout from "./Components/pageLayout/PageLayout.jsx";
 import ARComponent from "./ar/ARComponent.jsx";
 import Events_create from "./account/events_create/Events_create.jsx";
-import Test from "./ar/Test.jsx";
+import Test from "./search/Test.jsx";
 function App() {
   return (
     <div className="App">
@@ -70,7 +70,7 @@ function App() {
               <Location />
             </PageLayout>
           }></Route>
-            <Route path='/test' element={
+            <Route path='/ar_page' element={
             <PageLayout>
               <Test />
             </PageLayout>
