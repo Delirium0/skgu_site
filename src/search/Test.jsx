@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const Test = () => {
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState(''); // Состояние для текста (207, 209 или пусто)
 
   useEffect(() => {
     const loadScripts = async () => {
@@ -33,7 +34,7 @@ const Test = () => {
     if (!scriptsLoaded) return;
 
     const scene = document.querySelector('a-scene');
-    if (!scene) {
+if (!scene) {
       console.error('Сцена не найдена');
       return;
     }
@@ -47,18 +48,20 @@ const Test = () => {
 
       targets.forEach((targetEl, index) => {
         targetEl.addEventListener('targetFound', () => {
-          console.log(`Найден кабинет ${index === 0 ? '207' : '209'}`);
+          const room = index === 0 ? '207' : '209';
+          console.log(`Найден кабинет ${room}`);
+          setCurrentRoom(room); // Устанавливаем текст для отображения
           document.body.style.backgroundColor = index === 0 ? 'blue' : 'red';
         });
 
         targetEl.addEventListener('targetLost', () => {
           console.log(`Потерян кабинет ${index === 0 ? '207' : '209'}`);
+          setCurrentRoom(''); // Сбрасываем текст
           document.body.style.backgroundColor = '';
         });
       });
     };
 
-    // Ждем полной инициализации сцены
     if (scene.hasLoaded) {
       handleTargetEvents();
     } else {
@@ -71,22 +74,28 @@ const Test = () => {
   }
 
   return (
-    <a-scene
-      mindar-image="imageTargetSrc: /targets_207_209.mind; autoStart: true;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-    >
-      <a-assets></a-assets>
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-box position="0 0 0" material="color: green"></a-box>
-      </a-entity>
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-box position="0 0 0" material="color: yellow"></a-box>
-      </a-entity>
-    </a-scene>
+    <div>
+      {/* Текст на странице */}
+      {currentRoom ? (
+        <h1 style={{ color: 'white', textAlign: 'center' }}>Кабинет {currentRoom}</h1>
+      ) : (
+        <h1 style={{ color: 'white', textAlign: 'center' }}>Наведите камеру на маркер</h1>
+      )}
+
+      {/* AR-сцена */}
+      <a-scene
+        mindar-image="imageTargetSrc: /targets_207_209.mind; autoStart: true;"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+      >
+        <a-assets></a-assets>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-entity mindar-image-target="targetIndex: 0"></a-entity>
+        <a-entity mindar-image-target="targetIndex: 1"></a-entity>
+      </a-scene>
+    </div>
   );
 };
 
