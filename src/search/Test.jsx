@@ -20,7 +20,7 @@ const Test = () => {
 
       await injectScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js');
 
-      setScriptsLoaded(true); // рендерим сцену после загрузки
+      setScriptsLoaded(true);
     };
 
     loadScripts();
@@ -37,27 +37,26 @@ const Test = () => {
         targets.forEach((targetEl, index) => {
           targetEl.addEventListener('targetFound', () => {
             if (index === 0) {
-              console.log('207');
-              document.body.style.backgroundColor = 'red';
-            } else if (index === 1) {
-              console.log('209');
+              console.log('Найден кабинет 207');
               document.body.style.backgroundColor = 'blue';
+            } else if (index === 1) {
+              console.log('Найден кабинет 209');
+              document.body.style.backgroundColor = 'red';
             }
           });
 
           targetEl.addEventListener('targetLost', () => {
-            document.body.style.backgroundColor = ''; // сброс
+            document.body.style.backgroundColor = ''; // сброс цвета
           });
         });
       });
     };
 
-    // Подождём чуть-чуть и добавим обработчики
     setTimeout(handleTargetEvents, 1000);
   }, [scriptsLoaded]);
 
   if (!scriptsLoaded) {
-    return <div>Загрузка AR...</div>; // можно отрисовать спиннер
+    return <div>Загрузка AR...</div>;
   }
 
   return (
@@ -72,23 +71,8 @@ const Test = () => {
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-entity
-          text="value: Room 207; align: center; color: white; width: 2"
-          position="0 -0.3 0.01"
-          geometry="primitive: plane; width: 2.1; height: 0.5"
-          material="color: rgba(0, 0, 0, 0.7)"
-        ></a-entity>
-      </a-entity>
-
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-entity
-          text="value: Room 209; align: center; color: white; width: 2"
-          position="0 -0.3 0.01"
-          geometry="primitive: plane; width: 2.1; height: 0.5"
-          material="color: rgba(0, 0, 0, 0.7)"
-        ></a-entity>
-      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 0"></a-entity>
+      <a-entity mindar-image-target="targetIndex: 1"></a-entity>
     </a-scene>
   );
 };
