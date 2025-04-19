@@ -37,7 +37,8 @@ const Test = () => {
 
   return (
     <a-scene
-      mindar-image="imageTargetSrc: ./office_207.mind;"
+      mindar-image="imageTargetSrc: /office_207.mind;"
+
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
