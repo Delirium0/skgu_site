@@ -32,27 +32,39 @@ const Test = () => {
     const handleTargetEvents = () => {
       const scene = document.querySelector('a-scene');
 
-      scene.addEventListener('renderstart', () => {
+      if (!scene) {
+        console.warn('Сцена не найдена!');
+        return;
+      }
+
+      const setupListeners = () => {
         const targets = document.querySelectorAll('[mindar-image-target]');
         targets.forEach((targetEl, index) => {
-          targetEl.addEventListener('targetFound', () => {
-            if (index === 0) {
-              console.log('Найден кабинет 207');
-              document.body.style.backgroundColor = 'blue';
-            } else if (index === 1) {
-              console.log('Найден кабинет 209');
-              document.body.style.backgroundColor = 'red';
-            }
-          });
+          targetEl.addEventListener('loaded', () => {
+            console.log(`Target ${index} loaded`);
 
-          targetEl.addEventListener('targetLost', () => {
-            document.body.style.backgroundColor = ''; // сброс цвета
+            targetEl.addEventListener('targetFound', () => {
+              console.log(`Найден кабинет ${index === 0 ? '207' : '209'}`);
+              document.body.style.backgroundColor = index === 0 ? 'blue' : 'red';
+            });
+
+            targetEl.addEventListener('targetLost', () => {
+              console.log(`Потерян кабинет ${index === 0 ? '207' : '209'}`);
+              document.body.style.backgroundColor = '';
+            });
           });
         });
-      });
+      };
+
+      // Подождём немного, чтобы элементы точно появились
+      setTimeout(setupListeners, 500);
     };
 
-    setTimeout(handleTargetEvents, 1000);
+    // Дождаться события отрисовки сцены
+    const scene = document.querySelector('a-scene');
+    if (scene) {
+      scene.addEventListener('renderstart', handleTargetEvents);
+    }
   }, [scriptsLoaded]);
 
   if (!scriptsLoaded) {
@@ -66,13 +78,19 @@ const Test = () => {
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
+      embedded
     >
       <a-assets></a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0"></a-entity>
-      <a-entity mindar-image-target="targetIndex: 1"></a-entity>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-plane position="0 0 0" width="1" height="1" color="blue" rotation="0 0 0"></a-plane>
+      </a-entity>
+
+      <a-entity mindar-image-target="targetIndex: 1">
+        <a-plane position="0 0 0" width="1" height="1" color="red" rotation="0 0 0"></a-plane>
+      </a-entity>
     </a-scene>
   );
 };
