@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 const Test = () => {
-  const [roomDescription, setRoomDescription] = useState(null); // Состояние для описания кабинета
-  const sceneRef = useRef(null); // Реф для доступа к a-scene
+  const [roomDescription, setRoomDescription] = useState(null);
+  const sceneRef = useRef(null);
 
   useEffect(() => {
     const loadScripts = async () => {
@@ -25,13 +25,16 @@ const Test = () => {
               sceneEl.addEventListener('targetFound', (event) => {
                 if (event.detail.targetIndex === 0) {
                   setRoomDescription('Кабинет 207: Отдел информационных систем');
+                  console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)'); // Вывод в консоль для 207
                 } else if (event.detail.targetIndex === 1) {
                   setRoomDescription('Кабинет 209: Описание для кабинета 209');
+                  console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)'); // Вывод в консоль для 209
                 }
               });
 
               sceneEl.addEventListener('targetLost', (event) => {
-                setRoomDescription(null); // Сбрасываем описание, когда цель теряется
+                setRoomDescription(null);
+                console.log('Цель потеряна'); // Вывод в консоль при потере цели
               });
             }
           };
@@ -49,13 +52,16 @@ const Test = () => {
             sceneEl.addEventListener('targetFound', (event) => {
               if (event.detail.targetIndex === 0) {
                 setRoomDescription('Кабинет 207: Отдел информационных систем');
+                console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)'); // Вывод в консоль для 207
               } else if (event.detail.targetIndex === 1) {
                 setRoomDescription('Кабинет 209: Описание для кабинета 209');
+                console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)'); // Вывод в консоль для 209
               }
             });
 
             sceneEl.addEventListener('targetLost', (event) => {
-              setRoomDescription(null); // Сбрасываем описание, когда цель теряется
+              setRoomDescription(null);
+              console.log('Цель потеряна'); // Вывод в консоль при потере цели
             });
           }
         };
@@ -65,7 +71,7 @@ const Test = () => {
     loadScripts();
 
     return () => {
-      // Очистка обработчиков событий (хотя в данном случае это не обязательно, но хорошая практика)
+      // Очистка обработчиков событий
       const sceneEl = sceneRef.current;
       if (sceneEl) {
         sceneEl.removeEventListener('targetFound', () => {});
@@ -77,7 +83,7 @@ const Test = () => {
   return (
     <div>
       <a-scene
-        ref={sceneRef} // Привязываем реф к a-scene
+        ref={sceneRef}
         mindar-image="imageTargetSrc: /targets_207_209.mind;"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
