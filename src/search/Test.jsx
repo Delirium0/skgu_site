@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Test = () => {
+  const [scriptsLoaded, setScriptsLoaded] = useState(false);
+
   useEffect(() => {
     const loadScripts = async () => {
       const injectScript = (src) =>
@@ -15,38 +17,48 @@ const Test = () => {
       if (!window.AFRAME) {
         await injectScript('https://aframe.io/releases/1.6.0/aframe.min.js');
       }
+
       await injectScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js');
 
-      // Обработчик после загрузки скриптов
-      const handleTargetEvents = () => {
-        const scene = document.querySelector('a-scene');
-
-        scene.addEventListener('renderstart', () => {
-          const targets = document.querySelectorAll('[mindar-image-target]');
-          targets.forEach((targetEl, index) => {
-            targetEl.addEventListener('targetFound', () => {
-              if (index === 0) {
-                console.log('207');
-                document.body.style.backgroundColor = 'red';
-              } else if (index === 1) {
-                console.log('209');
-                document.body.style.backgroundColor = 'blue';
-              }
-            });
-
-            targetEl.addEventListener('targetLost', () => {
-              document.body.style.backgroundColor = ''; // сброс
-            });
-          });
-        });
-      };
-
-      // Подождём чуть-чуть и добавим обработчики
-      setTimeout(handleTargetEvents, 1000);
+      setScriptsLoaded(true); // рендерим сцену после загрузки
     };
 
     loadScripts();
   }, []);
+
+  useEffect(() => {
+    if (!scriptsLoaded) return;
+
+    const handleTargetEvents = () => {
+      const scene = document.querySelector('a-scene');
+
+      scene.addEventListener('renderstart', () => {
+        const targets = document.querySelectorAll('[mindar-image-target]');
+        targets.forEach((targetEl, index) => {
+          targetEl.addEventListener('targetFound', () => {
+            if (index === 0) {
+              console.log('207');
+              document.body.style.backgroundColor = 'red';
+            } else if (index === 1) {
+              console.log('209');
+              document.body.style.backgroundColor = 'blue';
+            }
+          });
+
+          targetEl.addEventListener('targetLost', () => {
+            document.body.style.backgroundColor = ''; // сброс
+          });
+        });
+      });
+    };
+
+    // Подождём чуть-чуть и добавим обработчики
+    setTimeout(handleTargetEvents, 1000);
+  }, [scriptsLoaded]);
+
+  if (!scriptsLoaded) {
+    return <div>Загрузка AR...</div>; // можно отрисовать спиннер
+  }
 
   return (
     <a-scene
@@ -61,13 +73,12 @@ const Test = () => {
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-      <a-entity
-  text="value: Room 207; align: center; color: white; width: 2"
-  position="0 -0.3 0.01"
-  geometry="primitive: plane; width: 2.1; height: 0.5"
-  material="color: rgba(0, 0, 0, 0.7)"
-></a-entity>
-
+        <a-entity
+          text="value: Room 207; align: center; color: white; width: 2"
+          position="0 -0.3 0.01"
+          geometry="primitive: plane; width: 2.1; height: 0.5"
+          material="color: rgba(0, 0, 0, 0.7)"
+        ></a-entity>
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 1">
