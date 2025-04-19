@@ -61,19 +61,20 @@ const Test = () => {
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-entity
-          text="value: Room 207; align: center; color: white; width: 2"
-          position="0 -0.3 0.01"
-          geometry="primitive: plane; width: 2.1; height: auto"
-          material="color: rgba(0, 0, 0, 0.7)"
-        ></a-entity>
+      <a-entity
+  text="value: Room 207; align: center; color: white; width: 2"
+  position="0 -0.3 0.01"
+  geometry="primitive: plane; width: 2.1; height: 0.5"
+  material="color: rgba(0, 0, 0, 0.7)"
+></a-entity>
+
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 1">
         <a-entity
           text="value: Room 209; align: center; color: white; width: 2"
           position="0 -0.3 0.01"
-          geometry="primitive: plane; width: 2.1; height: auto"
+          geometry="primitive: plane; width: 2.1; height: 0.5"
           material="color: rgba(0, 0, 0, 0.7)"
         ></a-entity>
       </a-entity>
