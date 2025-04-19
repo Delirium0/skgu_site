@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const Test = () => {
-  const [roomNumber, setRoomNumber] = useState(null); // Состояние для хранения номера комнаты
+  const [roomDescription, setRoomDescription] = useState(null); // Состояние для описания кабинета
+  const sceneRef = useRef(null); // Реф для доступа к a-scene
 
   useEffect(() => {
     const loadScripts = async () => {
@@ -16,40 +17,72 @@ const Test = () => {
           mindarScript.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js';
           mindarScript.async = true;
           document.head.appendChild(mindarScript);
+
+          mindarScript.onload = () => {
+            // После загрузки MindAR, добавляем обработчики событий
+            const sceneEl = sceneRef.current;
+            if (sceneEl) {
+              sceneEl.addEventListener('targetFound', (event) => {
+                if (event.detail.targetIndex === 0) {
+                  setRoomDescription('Кабинет 207: Отдел информационных систем');
+                } else if (event.detail.targetIndex === 1) {
+                  setRoomDescription('Кабинет 209: Описание для кабинета 209');
+                }
+              });
+
+              sceneEl.addEventListener('targetLost', (event) => {
+                setRoomDescription(null); // Сбрасываем описание, когда цель теряется
+              });
+            }
+          };
         };
       } else {
         const mindarScript = document.createElement('script');
         mindarScript.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js';
         mindarScript.async = true;
         document.head.appendChild(mindarScript);
+
+        mindarScript.onload = () => {
+          // После загрузки MindAR, добавляем обработчики событий
+          const sceneEl = sceneRef.current;
+          if (sceneEl) {
+            sceneEl.addEventListener('targetFound', (event) => {
+              if (event.detail.targetIndex === 0) {
+                setRoomDescription('Кабинет 207: Отдел информационных систем');
+              } else if (event.detail.targetIndex === 1) {
+                setRoomDescription('Кабинет 209: Описание для кабинета 209');
+              }
+            });
+
+            sceneEl.addEventListener('targetLost', (event) => {
+              setRoomDescription(null); // Сбрасываем описание, когда цель теряется
+            });
+          }
+        };
       }
     };
 
     loadScripts();
+
+    return () => {
+      // Очистка обработчиков событий (хотя в данном случае это не обязательно, но хорошая практика)
+      const sceneEl = sceneRef.current;
+      if (sceneEl) {
+        sceneEl.removeEventListener('targetFound', () => {});
+        sceneEl.removeEventListener('targetLost', () => {});
+      }
+    };
   }, []);
 
-  const handleTargetFound = (targetIndex) => {
-    if (targetIndex === 0) {
-      setRoomNumber('207');
-    } else if (targetIndex === 1) {
-      setRoomNumber('209');
-    }
-  };
-
-  const handleTargetLost = () => {
-    setRoomNumber(null); // Сбрасываем номер комнаты, когда мишень потеряна
-  };
-
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       <a-scene
-        mindar-image="imageTargetSrc: /office_207.mind, /office_209.mind;" // Указываем оба файла .mind
+        ref={sceneRef} // Привязываем реф к a-scene
+        mindar-image="imageTargetSrc: /targets_207_209.mind;"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        onTargetFound={(e) => handleTargetFound(e.detail.targetIndex)} // Обработчик для targetFound
-        onTargetLost={handleTargetLost} // Обработчик для targetLost
       >
         <a-assets>
           <a-asset-item
@@ -60,35 +93,32 @@ const Test = () => {
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        {/* Первая мишень (targetIndex: 0) - office_207.mind */}
+        {/* Таргет для кабинета 207 */}
         <a-entity mindar-image-target="targetIndex: 0">
-          {/* Здесь можно добавить 3D контент для первой мишени, если нужно */}
+          <a-entity
+            text="value: Кабинет 207\nОтдел информационных систем; align: center; color: white; width: 2"
+            position="0 -0.3 0.01"
+            geometry="primitive: plane; width: 2.1; height: auto"
+            material="color: rgba(0, 0, 0, 0.7)"
+          ></a-entity>
         </a-entity>
 
-        {/* Вторая мишень (targetIndex: 1) - office_209.mind */}
+        {/* Таргет для кабинета 209 */}
         <a-entity mindar-image-target="targetIndex: 1">
-          {/* Здесь можно добавить 3D контент для второй мишени, если нужно */}
+          <a-entity
+            text="value: Кабинет 209\nОписание для кабинета 209; align: center; color: white; width: 2"
+            position="0 -0.3 0.01"
+            geometry="primitive: plane; width: 2.1; height: auto"
+            material="color: rgba(0, 0, 0, 0.7)"
+          ></a-entity>
         </a-entity>
 
       </a-scene>
 
-      {/* HTML элемент для текста, позиционированный поверх сцены, отображается условно */}
-      {roomNumber && (
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          // Изменяем цвет текста на синий
-          color: 'blue',
-          padding: '10px',
-          borderRadius: '5px',
-          zIndex: 10,
-          textAlign: 'center'
-        }}>
-          Room {roomNumber}<br />
-          Information Systems Department
+      {/* Блок для отображения синего текста на странице */}
+      {roomDescription && (
+        <div style={{ color: 'blue', textAlign: 'center', marginTop: '20px' }}>
+          {roomDescription}
         </div>
       )}
     </div>
