@@ -1,130 +1,66 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 const Test = () => {
-  const [roomDescription, setRoomDescription] = useState(null);
-  const sceneRef = useRef(null);
-
   useEffect(() => {
+    // Загружаем A-Frame и mindar-image после монтирования компонента
     const loadScripts = async () => {
+      // Проверяем, загружены ли скрипты, чтобы избежать повторной загрузки
       if (!window.AFRAME) {
         const aframeScript = document.createElement('script');
         aframeScript.src = 'https://aframe.io/releases/1.6.0/aframe.min.js';
-        aframeScript.async = true;
+        aframeScript.async = true; // чтобы не блокировать парсинг
         document.head.appendChild(aframeScript);
 
-        aframeScript.onload = () => {
+        aframeScript.onload = () => { // Ждем загрузки A-Frame перед загрузкой MindAR
           const mindarScript = document.createElement('script');
           mindarScript.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js';
           mindarScript.async = true;
           document.head.appendChild(mindarScript);
-
-          mindarScript.onload = () => {
-            // После загрузки MindAR, добавляем обработчики событий
-            const sceneEl = sceneRef.current;
-            if (sceneEl) {
-              sceneEl.addEventListener('targetFound', (event) => {
-                if (event.detail.targetIndex === 0) {
-                  setRoomDescription('Кабинет 207: Отдел информационных систем');
-                  console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)');
-                } else if (event.detail.targetIndex === 1) {
-                  setRoomDescription('Кабинет 209: Описание для кабинета 209');
-                  console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)');
-                }
-              });
-
-              sceneEl.addEventListener('targetLost', (event) => {
-                setRoomDescription(null);
-                console.log('Цель потеряна');
-              });
-            }
-          };
         };
-      } else {
-        const mindarScript = document.createElement('script');
-        mindarScript.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js';
-        mindarScript.async = true;
-        document.head.appendChild(mindarScript);
-
-        mindarScript.onload = () => {
-          // После загрузки MindAR, добавляем обработчики событий
-          const sceneEl = sceneRef.current;
-          if (sceneEl) {
-            sceneEl.addEventListener('targetFound', (event) => {
-              if (event.detail.targetIndex === 0) {
-                setRoomDescription('Кабинет 207: Отдел информационных систем');
-                console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)');
-              } else if (event.detail.targetIndex === 1) {
-                setRoomDescription('Кабинет 209: Описание для кабинета 209');
-                console.log('Обнаружена цель: Кабинет 209 (targetIndex: 1)');
-              }
-            });
-
-            sceneEl.addEventListener('targetLost', (event) => {
-              setRoomDescription(null);
-              console.log('Цель потеряна');
-            });
-          }
-        };
+      }
+      else {
+          const mindarScript = document.createElement('script');
+          mindarScript.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js';
+          mindarScript.async = true;
+          document.head.appendChild(mindarScript);
       }
     };
 
     loadScripts();
 
+    // Этот код будет выполнен при размонтировании компонента
     return () => {
-      // Очистка обработчиков событий
-      const sceneEl = sceneRef.current;
-      if (sceneEl) {
-        sceneEl.removeEventListener('targetFound', () => {});
-        sceneEl.removeEventListener('targetLost', () => {});
-      }
+      // Здесь можно добавить код для очистки, если это необходимо
+      // Например, удаление созданных элементов A-Frame (если они создаются динамически)
     };
   }, []);
 
   return (
-    <div>
-      <a-scene
-        ref={sceneRef}
-        mindar-image="imageTargetSrc: /targets_207_209.mind;"
-        color-space="sRGB"
-        renderer="colorManagement: true, physicallyCorrectLights"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-      >
-        {/* Удалили блок <a-assets> */}
+    <a-scene
+      mindar-image="imageTargetSrc: /office_207.mind;"
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-assets>
+        <a-asset-item
+          id="avatarModel"
+          src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softmind/scene.gltf"
+        ></a-asset-item>
+      </a-assets>
 
-        {/* Таргет для кабинета 207 */}
-        <a-entity mindar-image-target="targetIndex: 0">
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
         <a-entity
-            text="value: Кабинет 207\nОтдел информационных систем; align: center; color: white; width: 2"
-            position="0 -0.3 0.01"
-            // Удалили geometry="primitive: plane; width: 2.1; height: auto"
-            material="color: rgba(0, 0, 0, 0.7)"
-          ></a-entity>
-          {/* Удалили <a-entity gltf-model="#avatarModel"> */}
-        </a-entity>
-
-        {/* Таргет для кабинета 209 */}
-        <a-entity mindar-image-target="targetIndex: 1">
-        <a-entity
-            text="value: Кабинет 209\nОписание для кабинета 209; align: center; color: white; width: 2"
-            position="0 -0.3 0.01"
-            // Удалили geometry="primitive: plane; width: 2.1; height: auto"
-            material="color: rgba(0, 0, 0, 0.7)"
-          ></a-entity>
-          {/* Удалили <a-entity gltf-model="#avatarModel"> */}
-        </a-entity>
-
-      </a-scene>
-
-      {/* Блок для отображения синего текста на странице */}
-      {roomDescription && (
-        <div style={{ color: 'blue', textAlign: 'center', marginTop: '20px' }}>
-          {roomDescription}
-        </div>
-      )}
-    </div>
+          text="value: Room 207\nInformation Systems Department; align: center; color: white; width: 2"
+          position="0 -0.3 0.01"
+          geometry="primitive: plane; width: 2.1; height: auto"
+          material="color: rgba(0, 0, 0, 0.7)"
+        ></a-entity>
+      </a-entity>
+    </a-scene>
   );
 };
 
