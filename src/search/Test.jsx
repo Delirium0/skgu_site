@@ -23,6 +23,7 @@ const Test = () => {
             const sceneEl = sceneRef.current;
             if (sceneEl) {
               sceneEl.addEventListener('targetFound', (event) => {
+                document.body.style.backgroundColor = 'black'; // Меняем фон на черный
                 if (event.detail.targetIndex === 0) {
                   setRoomDescription('Кабинет 207: Отдел информационных систем');
                   console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)');
@@ -33,6 +34,7 @@ const Test = () => {
               });
 
               sceneEl.addEventListener('targetLost', (event) => {
+                document.body.style.backgroundColor = ''; // Возвращаем фон по умолчанию (или можно установить 'white' или другой цвет)
                 setRoomDescription(null);
                 console.log('Цель потеряна');
               });
@@ -50,6 +52,7 @@ const Test = () => {
           const sceneEl = sceneRef.current;
           if (sceneEl) {
             sceneEl.addEventListener('targetFound', (event) => {
+                document.body.style.backgroundColor = 'black'; // Меняем фон на черный
               if (event.detail.targetIndex === 0) {
                 setRoomDescription('Кабинет 207: Отдел информационных систем');
                 console.log('Обнаружена цель: Кабинет 207 (targetIndex: 0)');
@@ -60,6 +63,7 @@ const Test = () => {
             });
 
             sceneEl.addEventListener('targetLost', (event) => {
+                document.body.style.backgroundColor = ''; // Возвращаем фон по умолчанию
               setRoomDescription(null);
               console.log('Цель потеряна');
             });
@@ -90,31 +94,8 @@ const Test = () => {
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
       >
-        {/* Удалили блок <a-assets> */}
-
+        {/* Удалили <a-assets> блок и все <a-entity mindar-image-target> с 3D текстом */}
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-        {/* Таргет для кабинета 207 */}
-        <a-entity mindar-image-target="targetIndex: 0">
-          <a-entity
-            text="value: Кабинет 207\nОтдел информационных систем; align: center; color: white; width: 2"
-            position="0 -0.3 0.01"
-            geometry="primitive: plane; width: 2.1; height: auto"
-            material="color: rgba(0, 0, 0, 0.7)"
-          ></a-entity>
-          {/* Удалили <a-entity gltf-model="#avatarModel"> */}
-        </a-entity>
-
-        {/* Таргет для кабинета 209 */}
-        <a-entity mindar-image-target="targetIndex: 1">
-          <a-entity
-            text="value: Кабинет 209\nОписание для кабинета 209; align: center; color: white; width: 2"
-            position="0 -0.3 0.01"
-            geometry="primitive: plane; width: 2.1; height: auto"
-            material="color: rgba(0, 0, 0, 0.7)"
-          ></a-entity>
-          {/* Удалили <a-entity gltf-model="#avatarModel"> */}
-        </a-entity>
 
       </a-scene>
 
