@@ -1,5 +1,5 @@
 // Test.js
-import React, { useEffect, useState, useRef } from 'react'; // Добавим useRef
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import styles from './Test.module.css';
 
@@ -13,11 +13,12 @@ const Test = () => {
   const [error, setError] = useState(null);
   const [arConfigNotFound, setArConfigNotFound] = useState(false);
   const [configLoadedSuccessfully, setConfigLoadedSuccessfully] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   const buildingOptions = ['6', '7', '8'];
   const floorOptions = ['1', '2', '3', '4', '5'];
 
-  const sceneRef = useRef(null); // Ref для a-scene
+  const sceneRef = useRef(null);
 
   useEffect(() => {
     const loadScripts = async () => {
@@ -32,10 +33,13 @@ const Test = () => {
         });
 
       try {
+        // Проверяем, загружены ли уже AFRAME и MINDAR
         if (!window.AFRAME) {
           await injectScript('https://aframe.io/releases/1.6.0/aframe.min.js');
         }
-        await injectScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js');
+        if (!window.MINDAR) {
+          await injectScript('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js');
+        }
         setScriptsLoaded(true);
       } catch (error) {
         console.error('Ошибка загрузки скриптов:', error);
@@ -45,7 +49,6 @@ const Test = () => {
 
     loadScripts();
   }, []);
-
   useEffect(() => {
     if (!scriptsLoaded) return;
 
@@ -53,7 +56,8 @@ const Test = () => {
       setLoadingConfig(true);
       setError(null);
       setArConfigNotFound(false);
-      setConfigLoadedSuccessfully(false); // Сбрасываем состояние при каждом запросе
+      setConfigLoadedSuccessfully(false);
+      setShowCamera(false);
 
       try {
         const response = await axios.get(
@@ -69,6 +73,7 @@ const Test = () => {
         const blobUrl = URL.createObjectURL(response.data);
         setMindFileUrl(blobUrl);
         setConfigLoadedSuccessfully(true);
+        setShowCamera(true);
         console.log("Конфигурация успешно загружена");
 
       } catch (error) {
@@ -76,12 +81,14 @@ const Test = () => {
         if (error.response && error.response.status === 404) {
           console.log("Обнаружена 404 ошибка");
           setArConfigNotFound(true);
-          setConfigLoadedSuccessfully(false); // Убедимся, что состояние сброшено при 404
+          setConfigLoadedSuccessfully(false);
+          setShowCamera(false);
           setMindFileUrl('');
         } else {
           setError(error);
           setArConfigNotFound(false);
-          setConfigLoadedSuccessfully(false); // И при других ошибках тоже сбрасываем
+          setConfigLoadedSuccessfully(false);
+          setShowCamera(false);
         }
       } finally {
         setLoadingConfig(false);
@@ -92,16 +99,39 @@ const Test = () => {
   }, [scriptsLoaded, buildingNumber, floorNumber]);
 
   useEffect(() => {
-    if (!scriptsLoaded || !mindFileUrl || !configLoadedSuccessfully || arConfigNotFound) return; // Добавим проверку configLoadedSuccessfully и !arConfigNotFound
+    if (arConfigNotFound) {
+      const scanningOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-scanning');
+      const compatibilityOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-compatibility');
+      const loadingOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-loading');
 
-    const scene = sceneRef.current; // Используем ref
+      if (scanningOverlay && scanningOverlay.parentNode) {
+        scanningOverlay.parentNode.removeChild(scanningOverlay);
+      }
+      if (compatibilityOverlay && compatibilityOverlay.parentNode) {
+        compatibilityOverlay.parentNode.removeChild(compatibilityOverlay);
+      }
+      if (loadingOverlay && loadingOverlay.parentNode) {
+        loadingOverlay.parentNode.removeChild(loadingOverlay);
+      }
+    }
+  }, [arConfigNotFound]);
+
+  useEffect(() => {
+    if (!scriptsLoaded || !mindFileUrl || !configLoadedSuccessfully || arConfigNotFound || !showCamera) return;
+
+    const scene = sceneRef.current;
     if (!scene) {
       console.error('Сцена не найдена');
       return;
     }
 
+    const targets = scene.querySelectorAll('[mindar-image-target]');
+    targets.forEach(targetEl => {
+      targetEl.replaceWith(targetEl.cloneNode(true));
+    });
+
     const handleTargetEvents = () => {
-      const targets = scene.querySelectorAll('[mindar-image-target]'); // Используем sceneRef
+      const targets = scene.querySelectorAll('[mindar-image-target]');
       if (targets.length === 0) {
         console.error('Цели MindAR не найдены');
         return;
@@ -128,7 +158,30 @@ const Test = () => {
     } else {
       scene.addEventListener('loaded', handleTargetEvents);
     }
-  }, [scriptsLoaded, mindFileUrl, configLoadedSuccessfully, arConfigNotFound]); // Добавим зависимости configLoadedSuccessfully и arConfigNotFound
+  }, [scriptsLoaded, mindFileUrl, configLoadedSuccessfully, arConfigNotFound, showCamera]);
+
+  useEffect(() => {
+    return () => {
+      const cleanupDelay = 500; // Задержка в 100 миллисекунд (можете настроить)
+
+      setTimeout(() => {
+        const scanningOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-scanning');
+        const compatibilityOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-compatibility');
+        const loadingOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-loading');
+
+        if (scanningOverlay && scanningOverlay.parentNode) {
+          scanningOverlay.parentNode.removeChild(scanningOverlay);
+        }
+        if (compatibilityOverlay && compatibilityOverlay.parentNode) {
+          compatibilityOverlay.parentNode.removeChild(compatibilityOverlay);
+        }
+        if (loadingOverlay && loadingOverlay.parentNode) {
+          loadingOverlay.parentNode.removeChild(loadingOverlay);
+        }
+      }, cleanupDelay); // Задержка перед выполнением очистки
+    };
+  }, []);
+
 
   const handleBuildingChange = (e) => {
     setBuildingNumber(e.target.value);
@@ -142,7 +195,6 @@ const Test = () => {
   return (
     <div className={styles.arPage}>
       <div className={styles.arSelectors}>
-        {/* Селекторы корпуса и этажа */}
         <div className={styles.arSelectorGroup}>
           <label htmlFor="buildingNumber" className={styles.arLabel}>Корпус:</label>
           <select
@@ -186,7 +238,7 @@ const Test = () => {
         <div className={`${styles.error}`}>Ошибка: {error.message}</div>
       )}
 
-      {!loadingConfig && !arConfigNotFound && !error && configLoadedSuccessfully && ( // Условие рендеринга a-scene
+      {showCamera && !loadingConfig && !arConfigNotFound && !error && (
         <>
           {currentRoom ? (
             <h1 className={styles.arMessage}>
@@ -199,14 +251,15 @@ const Test = () => {
           )}
 
           <div className={styles.arCameraContainer}>
-            {mindFileUrl && scriptsLoaded && ( // Упрощенное условие, configLoadedSuccessfully уже проверено выше
+            {mindFileUrl && scriptsLoaded && configLoadedSuccessfully && !arConfigNotFound && (
               <a-scene
-                ref={sceneRef} // Привязываем ref
+                ref={sceneRef}
                 mindar-image={`imageTargetSrc: ${mindFileUrl}; autoStart: true;`}
                 color-space="sRGB"
                 renderer="colorManagement: true, physicallyCorrectLights"
                 vr-mode-ui="enabled: false"
                 device-orientation-permission-ui="enabled: false"
+                className={arConfigNotFound ? styles['ar-config-not-found'] : ''}
               >
                 <a-assets></a-assets>
                 <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>

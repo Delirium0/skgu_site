@@ -3,6 +3,7 @@ import cl from "./Footer.module.css";
 import homeIcon from "./home-icon-silhouette-svgrepo-com.svg";
 import accuntIcon from "./account-svgrepo-com.svg";
 import searchIcon from "./search-svgrepo-com.svg";
+import arIcon from "./vr-glasses-goggles-headset-remove-svgrepo-com.svg";
 import { Link } from "react-router-dom";
 const Footer = () => {
   return (
@@ -27,6 +28,15 @@ const Footer = () => {
         </Link>
       </div>
       <div className={cl.home_block}>
+        <Link to="/ar_page">
+          <img
+            className={cl.footer_home_image}
+            src={arIcon}
+            alt="account icon"
+          />
+        </Link>
+      </div>
+      <div className={cl.home_block}>
         <Link to="/account">
           <img
             className={cl.footer_home_image}
@@ -35,6 +45,7 @@ const Footer = () => {
           />
         </Link>
       </div>
+
     </div>
   );
 };
