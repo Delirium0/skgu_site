@@ -55,10 +55,11 @@ const Test = () => {
 
     loadScripts();
 
-    // Cleanup функция, которая будет вызвана при размонтировании компонента
     return () => {
       removeMindarOverlays();
       console.log('Mindar Overlays удалены при размонтировании компонента');
+      document.body.style.overflow = 'auto'; // Явно возвращаем прокрутку body
+      document.documentElement.style.overflow = 'auto'; // И html элемента на всякий случай
     };
 
   }, []);
