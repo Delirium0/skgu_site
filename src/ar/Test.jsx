@@ -19,6 +19,14 @@ const Test = () => {
 
   const sceneRef = useRef(null);
 
+  // Функция для удаления элементов mindar-ui-overlay
+  const removeMindarOverlays = () => {
+    const overlays = document.querySelectorAll('.mindar-ui-overlay');
+    overlays.forEach(overlay => {
+      overlay.remove();
+    });
+  };
+
   useEffect(() => {
     const loadScripts = async () => {
       const injectScript = (src) =>
@@ -46,10 +54,20 @@ const Test = () => {
     };
 
     loadScripts();
+
+    // Cleanup функция, которая будет вызвана при размонтировании компонента
+    return () => {
+      removeMindarOverlays();
+      console.log('Mindar Overlays удалены при размонтировании компонента');
+    };
+
   }, []);
 
   useEffect(() => {
     if (!scriptsLoaded) return;
+
+    // Удаляем overlay элементы перед новым запросом конфигурации
+    removeMindarOverlays();
 
     const fetchArConfig = async () => {
       setLoadingConfig(true);
@@ -71,6 +89,8 @@ const Test = () => {
         console.error('Ошибка загрузки AR конфигурации:', error);
         if (error.response && error.response.status === 404) {
           setArConfigNotFound(true);
+          // Удаляем overlay элементы при 404 ошибке
+          removeMindarOverlays();
         } else {
           setError(error);
         }
@@ -261,6 +281,7 @@ const Test = () => {
           )}
         </div>
       )}
+      {/* Здесь будут автоматически добавлены <div class="mindar-ui-overlay ..."> элементы, если MindAR скрипты их добавляют */}
     </div>
   );
 };
