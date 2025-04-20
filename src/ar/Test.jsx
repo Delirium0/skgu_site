@@ -53,23 +53,26 @@ const Test = () => {
     if (!scriptsLoaded) return;
 
     const fetchArConfig = async () => {
-      setLoadingConfig(true);
-      setError(null);
-      setArConfigNotFound(false);
-      setConfigLoadedSuccessfully(false);
-      setShowCamera(false);
+        setLoadingConfig(true);
+        setError(null);
+        setArConfigNotFound(false);
+        setConfigLoadedSuccessfully(false);
+        setShowCamera(false);
 
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/ar/config`,
-          {
-            params: {
-              building_number: buildingNumber,
-              floor_number: floorNumber,
-            },
-            responseType: 'blob',
-          }
-        );
+        console.log("useEffect сработал:", { buildingNumber, floorNumber }); // <--- Добавьте эту строку
+
+        try {
+            console.log("Начинаю запрос к API:", `${process.env.REACT_APP_API_URL}/ar/config`, { buildingNumber, floorNumber }); // <--- И эту
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_URL}/ar/config`,
+                {
+                    params: {
+                        building_number: buildingNumber,
+                        floor_number: floorNumber,
+                    },
+                    responseType: 'blob',
+                }
+            );
         const blobUrl = URL.createObjectURL(response.data);
         setMindFileUrl(blobUrl);
         setConfigLoadedSuccessfully(true);
