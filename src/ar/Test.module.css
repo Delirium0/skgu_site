@@ -17,6 +17,8 @@
     gap: 20px;
     margin-bottom: 20px;
     justify-content: center;
+    z-index: 200;
+    position: relative;
 }
 
 .arSelectorGroup {
@@ -85,9 +87,21 @@
     color: white;
     text-align: center;
     margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Уменьшил отступ снизу, чтобы описание было ближе */
     font-size: 1.2em;
 }
+
+/* Стили для описания кабинета */
+.arDescription {
+    color: #eee; /* Цвет описания, можно изменить */
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 0; /* Убрал отступ сверху, так как уже есть отступ у .arMessage */
+    margin-bottom: 20px; /* Добавил отступ снизу */
+    padding: 0 20px; /* Горизонтальный отступ для лучшего вида на узких экранах */
+    line-height: 1.4; /* Увеличил межстрочный интервал для лучшей читаемости */
+}
+
 
 /* Состояния загрузки и ошибки */
 .loading, .error {
@@ -118,6 +132,10 @@
     }
     .arMessage {
         font-size: 1em;
+    }
+    .arDescription {
+        font-size: 0.9rem; /* Немного уменьшил шрифт описания на мобильных */
+        padding: 0 10px; /* Уменьшил горизонтальный отступ на мобильных */
     }
 }
 

@@ -4,9 +4,9 @@ import styles from './Test.module.css';
 
 const Test = () => {
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
-  const [currentRoom, setCurrentRoom] = useState(null); // Состояние для текущей комнаты
-  const [rooms, setRooms] = useState([]); // Данные о комнатах
-  const [mindFileUrl, setMindFileUrl] = useState(''); // URL для .mind файла
+  const [currentRoom, setCurrentRoom] = useState(null);
+  const [rooms, setRooms] = useState([]);
+  const [mindFileUrl, setMindFileUrl] = useState('');
   const [loadingConfig, setLoadingConfig] = useState(false);
   const [loadingRooms, setLoadingRooms] = useState(false);
   const [buildingNumber, setBuildingNumber] = useState('6');
@@ -19,7 +19,6 @@ const Test = () => {
 
   const sceneRef = useRef(null);
 
-  // Загрузка скриптов
   useEffect(() => {
     const loadScripts = async () => {
       const injectScript = (src) =>
@@ -49,7 +48,6 @@ const Test = () => {
     loadScripts();
   }, []);
 
-  // Загрузка AR конфигурации и комнат
   useEffect(() => {
     if (!scriptsLoaded) return;
 
@@ -106,7 +104,6 @@ const Test = () => {
     fetchRooms();
   }, [scriptsLoaded, buildingNumber, floorNumber]);
 
-  // Обработка событий меток
   useEffect(() => {
     if (!scriptsLoaded || !mindFileUrl || rooms.length === 0) return;
 
@@ -153,7 +150,6 @@ const Test = () => {
       scene.addEventListener('loaded', handleTargetEvents, { once: true });
     }
 
-    // Очистка при размонтировании
     return () => {
       const targets = scene.querySelectorAll('[mindar-image-target]');
       targets.forEach((targetEl) => {
@@ -163,7 +159,6 @@ const Test = () => {
     };
   }, [scriptsLoaded, mindFileUrl, rooms]);
 
-  // Обработчики изменения корпуса и этажа
   const handleBuildingChange = (e) => setBuildingNumber(e.target.value);
   const handleFloorChange = (e) => setFloorNumber(e.target.value);
 
@@ -226,9 +221,16 @@ const Test = () => {
       {!loadingConfig && !loadingRooms && !arConfigNotFound && !error && (
         <div>
           {currentRoom ? (
-            <h1 className={styles.arMessage}>
-              Кабинет {currentRoom.room_number} - {currentRoom.room_name}
-            </h1>
+            <div className={styles.arMessageContainer}>
+              <h1 className={styles.arMessage}>
+                Кабинет {currentRoom.room_number} - {currentRoom.room_name}
+              </h1>
+              {currentRoom.description && (
+                <p className={styles.arDescription}>
+                  {currentRoom.description}
+                </p>
+              )}
+            </div>
           ) : (
             <h1 className={styles.arMessage}>Наведите камеру на маркер</h1>
           )}
@@ -251,7 +253,7 @@ const Test = () => {
                     mindar-image-target={`targetIndex: ${room.target_index}`}
                     targetIndex={room.target_index}
                   >
-                
+
                   </a-entity>
                 ))}
               </a-scene>
