@@ -59,10 +59,9 @@ const Test = () => {
         setConfigLoadedSuccessfully(false);
         setShowCamera(false);
 
-        console.log("useEffect сработал:", { buildingNumber, floorNumber }); // <--- Добавьте эту строку
-
+        console.log("useEffect сработал:", { buildingNumber, floorNumber });
         try {
-            console.log("Начинаю запрос к API:", `${process.env.REACT_APP_API_URL}/ar/config`, { buildingNumber, floorNumber }); // <--- И эту
+            console.log("Начинаю запрос к API:", `${process.env.REACT_APP_API_URL}/ar/config`, { buildingNumber, floorNumber }); 
             const response = await axios.get(
                 `${process.env.REACT_APP_API_URL}/ar/config`,
                 {
