@@ -1,0 +1,103 @@
+/* Test.module.css */
+
+.arPage {
+    min-height: 100vh;
+    background-color: rgb(21, 21, 21); /* Темно-серый фон как в примерах */
+    color: rgb(247, 252, 248); /* Светлый текст */
+    font-family: 'Inter', sans-serif;
+    padding-bottom: 60px; /* Под футер, если есть */
+    padding-top: 20px; /* Отступ сверху для контента */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирование содержимого по горизонтали */
+}
+
+.arSelectors {
+    display: flex;
+    gap: 20px; /* Расстояние между селекторами */
+    margin-bottom: 20px; /* Отступ снизу от селекторов до AR-камеры */
+    justify-content: center; /* Центрирование селекторов */
+}
+
+.arSelectorGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.arLabel {
+    margin-bottom: 8px;
+    font-size: 1em;
+}
+
+.arSelect {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid rgb(80, 80, 80); /* Граница как в примерах */
+    background-color: rgb(46, 46, 46); /* Фон как в примерах */
+    color: rgb(247, 252, 248);
+    font-size: 1em;
+    appearance: none; /* Убираем стандартные стили select */
+    -webkit-appearance: none; /* Для Safari */
+    -moz-appearance: none; /* Для Firefox */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="rgb(247, 252, 248)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 5px;
+    padding-right: 30px; /* Добавляем место для стрелочки */
+}
+
+.arSelect:focus {
+    outline: none;
+    border-color: rgb(0, 123, 255); /* Подсветка при фокусе, как в EventsCreate */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
+/* Стили для контейнера AR-камеры */
+.arCameraContainer {
+    margin-top: 50px; /* Отступ от верхней части экрана, чтобы избежать наложения хедера */
+    width: 100%; /* Занимает всю ширину контейнера */
+    max-width: 800px; /* Ограничение максимальной ширины, если нужно */
+    overflow: hidden; /* Предотвращение выхода контента за границы */
+}
+
+/* Стили для текста "Наведите камеру" и "Кабинет" */
+.arMessage {
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+
+/* Состояния загрузки и ошибки */
+.loading, .error {
+    color: rgb(247, 252, 248);
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+.error {
+    color: rgb(187, 1, 60); /* Красный цвет для ошибки */
+}
+
+/* Адаптивность - медиа запросы (пример для мобильных) */
+@media (max-width: 768px) {
+    .arSelectors {
+        flex-direction: column; /* Селекторы в столбик на мобильных */
+        align-items: center; /* Центрирование селекторов на мобильных */
+        gap: 10px; /* Меньший отступ между селекторами на мобильных */
+        position: relative; /* Важно для работы z-index */
+        z-index: 10; /*  Задайте достаточно высокий z-index */
+    }
+    .arSelect {
+        width: 100%; /* Селекторы на всю ширину экрана на мобильных */
+    }
+    .arCameraContainer {
+        margin-top: 30px; /* Меньший отступ сверху на мобильных, если нужно */
+    }
+    .arMessage {
+        font-size: 1em; /* Меньший размер шрифта для сообщения на мобильных */
+    }
+}
