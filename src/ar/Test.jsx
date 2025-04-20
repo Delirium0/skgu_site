@@ -5,15 +5,17 @@ import styles from './Test.module.css';
 
 const Test = () => {
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
-  const [currentRoom, setCurrentRoom] = useState('');
+  const [currentRoomInfo, setCurrentRoomInfo] = useState(null); // Изменено для хранения информации о комнате
   const [mindFileUrl, setMindFileUrl] = useState('');
   const [loadingConfig, setLoadingConfig] = useState(false);
+  const [loadingRooms, setLoadingRooms] = useState(false); // Добавлено состояние загрузки комнат
   const [buildingNumber, setBuildingNumber] = useState('6');
   const [floorNumber, setFloorNumber] = useState('1');
   const [error, setError] = useState(null);
   const [arConfigNotFound, setArConfigNotFound] = useState(false);
   const [configLoadedSuccessfully, setConfigLoadedSuccessfully] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const [rooms, setRooms] = useState([]); // Состояние для хранения данных о комнатах
 
   const buildingOptions = ['6', '7', '8'];
   const floorOptions = ['1', '2', '3', '4', '5'];
@@ -33,7 +35,6 @@ const Test = () => {
         });
 
       try {
-        // Проверяем, загружены ли уже AFRAME и MINDAR
         if (!window.AFRAME) {
           await injectScript('https://aframe.io/releases/1.6.0/aframe.min.js');
         }
@@ -49,29 +50,28 @@ const Test = () => {
 
     loadScripts();
   }, []);
+
   useEffect(() => {
     if (!scriptsLoaded) return;
 
     const fetchArConfig = async () => {
-        setLoadingConfig(true);
-        setError(null);
-        setArConfigNotFound(false);
-        setConfigLoadedSuccessfully(false);
-        setShowCamera(false);
+      setLoadingConfig(true);
+      setError(null);
+      setArConfigNotFound(false);
+      setConfigLoadedSuccessfully(false);
+      setShowCamera(false);
 
-        console.log("useEffect сработал:", { buildingNumber, floorNumber });
-        try {
-            console.log("Начинаю запрос к API:", `${process.env.REACT_APP_API_URL}/ar/config`, { buildingNumber, floorNumber }); 
-            const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/ar/config`,
-                {
-                    params: {
-                        building_number: buildingNumber,
-                        floor_number: floorNumber,
-                    },
-                    responseType: 'blob',
-                }
-            );
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/ar/config`,
+          {
+            params: {
+              building_number: buildingNumber,
+              floor_number: floorNumber,
+            },
+            responseType: 'blob',
+          }
+        );
         const blobUrl = URL.createObjectURL(response.data);
         setMindFileUrl(blobUrl);
         setConfigLoadedSuccessfully(true);
@@ -97,7 +97,33 @@ const Test = () => {
       }
     };
 
+    const fetchRooms = async () => {
+      setLoadingRooms(true);
+      setError(null);
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/ar/rooms`,
+          {
+            params: {
+              building_number: buildingNumber,
+              floor_number: floorNumber,
+            },
+          }
+        );
+        setRooms(response.data);
+        console.log("Данные о комнатах успешно загружены", response.data);
+      } catch (error) {
+        console.error('Ошибка загрузки данных о комнатах:', error);
+        setError(error);
+        setRooms([]); // Сбросить комнаты в случае ошибки
+      } finally {
+        setLoadingRooms(false);
+      }
+    };
+
     fetchArConfig();
+    fetchRooms(); // Загрузка данных о комнатах при изменении корпуса/этажа
+
   }, [scriptsLoaded, buildingNumber, floorNumber]);
 
   useEffect(() => {
@@ -119,7 +145,7 @@ const Test = () => {
   }, [arConfigNotFound]);
 
   useEffect(() => {
-    if (!scriptsLoaded || !mindFileUrl || !configLoadedSuccessfully || arConfigNotFound || !showCamera) return;
+    if (!scriptsLoaded || !mindFileUrl || !configLoadedSuccessfully || arConfigNotFound || !showCamera || rooms.length === 0) return;
 
     const scene = sceneRef.current;
     if (!scene) {
@@ -127,9 +153,10 @@ const Test = () => {
       return;
     }
 
+    // Очищаем предыдущие target events, если они были
     const targets = scene.querySelectorAll('[mindar-image-target]');
     targets.forEach(targetEl => {
-      targetEl.replaceWith(targetEl.cloneNode(true));
+      targetEl.replaceWith(targetEl.cloneNode(true)); // Replaces and thus removes old event listeners
     });
 
     const handleTargetEvents = () => {
@@ -139,17 +166,24 @@ const Test = () => {
         return;
       }
 
-      targets.forEach((targetEl, index) => {
+      targets.forEach((targetEl) => {
+        const targetIndex = parseInt(targetEl.getAttribute('targetIndex'), 10);
+        const roomInfo = rooms.find(room => room.target_index === targetIndex);
+
+        if (!roomInfo) {
+          console.error(`Комната не найдена для targetIndex: ${targetIndex}`);
+          return;
+        }
+
         targetEl.addEventListener('targetFound', () => {
-          const room = index === 0 ? '207' : '209';
-          console.log(`Найден кабинет ${room}`);
-          setCurrentRoom(room);
-          document.body.style.backgroundColor = index === 0 ? 'blue' : 'red';
+          console.log(`Найден кабинет ${roomInfo.room_number}`);
+          setCurrentRoomInfo(roomInfo);
+          document.body.style.backgroundColor = 'lightgreen'; // Пример стилизации
         });
 
         targetEl.addEventListener('targetLost', () => {
-          console.log(`Потерян кабинет ${index === 0 ? '207' : '209'}`);
-          setCurrentRoom('');
+          console.log(`Потерян кабинет ${roomInfo.room_number}`);
+          setCurrentRoomInfo(null);
           document.body.style.backgroundColor = '';
         });
       });
@@ -160,11 +194,11 @@ const Test = () => {
     } else {
       scene.addEventListener('loaded', handleTargetEvents);
     }
-  }, [scriptsLoaded, mindFileUrl, configLoadedSuccessfully, arConfigNotFound, showCamera]);
+  }, [scriptsLoaded, mindFileUrl, configLoadedSuccessfully, arConfigNotFound, showCamera, rooms]);
 
   useEffect(() => {
     return () => {
-      const cleanupDelay = 500; // Задержка в 100 миллисекунд (можете настроить)
+      const cleanupDelay = 500;
 
       setTimeout(() => {
         const scanningOverlay = document.querySelector('.mindar-ui-overlay.mindar-ui-scanning');
@@ -180,7 +214,7 @@ const Test = () => {
         if (loadingOverlay && loadingOverlay.parentNode) {
           loadingOverlay.parentNode.removeChild(loadingOverlay);
         }
-      }, cleanupDelay); // Задержка перед выполнением очистки
+      }, cleanupDelay);
     };
   }, []);
 
@@ -192,7 +226,6 @@ const Test = () => {
   const handleFloorChange = (e) => {
     setFloorNumber(e.target.value);
   };
-
 
   return (
     <div className={styles.arPage}>
@@ -228,6 +261,7 @@ const Test = () => {
       </div>
 
       {loadingConfig && <div className={styles.loading}>Загрузка AR...</div>}
+      {loadingRooms && <div className={styles.loading}>Загрузка комнат...</div>} {/* Индикатор загрузки комнат */}
 
       {arConfigNotFound && (
         <div className={`${styles.error}`}>
@@ -240,11 +274,11 @@ const Test = () => {
         <div className={`${styles.error}`}>Ошибка: {error.message}</div>
       )}
 
-      {showCamera && !loadingConfig && !arConfigNotFound && !error && (
+      {showCamera && !loadingConfig && !arConfigNotFound && !error && !loadingRooms && ( // Добавлено !loadingRooms
         <>
-          {currentRoom ? (
+          {currentRoomInfo ? (
             <h1 className={styles.arMessage}>
-              Кабинет {currentRoom}
+              Кабинет {currentRoomInfo.room_number} - {currentRoomInfo.room_name}
             </h1>
           ) : (
             <h1 className={styles.arMessage}>
@@ -253,7 +287,7 @@ const Test = () => {
           )}
 
           <div className={styles.arCameraContainer}>
-            {mindFileUrl && scriptsLoaded && configLoadedSuccessfully && !arConfigNotFound && (
+            {mindFileUrl && scriptsLoaded && configLoadedSuccessfully && !arConfigNotFound && rooms.length > 0 && (
               <a-scene
                 ref={sceneRef}
                 mindar-image={`imageTargetSrc: ${mindFileUrl}; autoStart: true;`}
@@ -265,8 +299,13 @@ const Test = () => {
               >
                 <a-assets></a-assets>
                 <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-                <a-entity mindar-image-target="targetIndex: 0"></a-entity>
-                <a-entity mindar-image-target="targetIndex: 1"></a-entity>
+                {rooms.map((room, index) => (
+                  <a-entity
+                    key={room.id} // Используйте room.id как key, если есть
+                    mindar-image-target={`targetIndex: ${room.target_index}`}
+                    targetIndex={room.target_index} // Ensure targetIndex is set as attribute
+                  ></a-entity>
+                ))}
               </a-scene>
             )}
           </div>
