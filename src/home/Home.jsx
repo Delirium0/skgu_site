@@ -324,24 +324,24 @@ const Home = () => {
 
   const [facultyes, setFacultyes] = useState([
     {
-      id: 1, // <<<--- ID есть
+      id: 2, // <<<--- ID есть
       faculty_name: "Языка и литературы",
       icon: svgIconTongueLiterature,
     },
     {
-      id: 2, // <<<--- ID есть
+      id: 8, // <<<--- ID есть
       faculty_name: "Математика и естественные науки",
       icon: svgIconMath,
     },
-    { id: 3, faculty_name: "История Экономика Право", icon: svgIconHistory }, // <<<--- ID есть
+    { id: 7, faculty_name: "История Экономика Право", icon: svgIconHistory }, // <<<--- ID есть
     {
-      id: 4, // <<<--- ID есть
+      id: 6, // <<<--- ID есть
       faculty_name: "Инженерии и цифровых технологий",
       icon: svgIconEnginers,
     },
     { id: 5, faculty_name: "Педагогический", icon: svgIconPedagog }, // <<<--- ID есть
-    { id: 6, faculty_name: "Агротехнический", icon: svgIconTongueAgrotex }, // <<<--- ID есть
-    { id: 7, faculty_name: "Медицина", icon: svgIconMed }, // <<<--- ID есть
+    { id: 4, faculty_name: "Агротехнический", icon: svgIconTongueAgrotex }, // <<<--- ID есть
+    { id: 3, faculty_name: "Медицина", icon: svgIconMed }, // <<<--- ID есть
   ]);
 
 
