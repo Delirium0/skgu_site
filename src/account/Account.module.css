@@ -46,7 +46,7 @@
 .faculty_icon svg {
     min-width: 70px;
     min-height: 70px;
-    fill: white; /* Задаем цвет заливки для SVG, чтобы он был виден на темном фоне */
+    fill: white; 
 }
 
 .progress_icon {

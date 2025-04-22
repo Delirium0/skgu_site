@@ -16,6 +16,7 @@ import PageLayout from "./Components/pageLayout/PageLayout.jsx";
 import ARComponent from "./ar/ARComponent.jsx";
 import Events_create from "./account/events_create/Events_create.jsx";
 import Test from "./ar/Test.jsx";
+import FacultyPage from "./faculties/FacultyPage.jsx";
 function App() {
   return (
     <div className="App">
@@ -83,6 +84,11 @@ function App() {
             <Route path='/events_create' element={
             <PageLayout>
               <Events_create />
+            </PageLayout>
+          }></Route>
+              <Route path='/faculty/:facultyId' element={
+            <PageLayout>
+              <FacultyPage />
             </PageLayout>
           }></Route>
         </Routes>
