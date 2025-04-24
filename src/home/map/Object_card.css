@@ -51,4 +51,35 @@
     
       
     
-    }  
+    }  /* В Object_card.css */
+/* В Object_card.css */
+.card-main-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 10px;
+    filter: brightness(0) invert(1); /* <--- ДОБАВИТЬ ЭТО */
+  }
+  
+  /* Не забудьте также добавить в медиа-запрос, если нужно */
+  @media (max-width: 425px) {
+    .card-main-icon {
+      width: 37px; /* Или ваш размер для мобильных */
+      height: 37px; /* Или ваш размер для мобильных */
+      /* filter: brightness(0) invert(1); - можно не дублировать, если он уже есть выше */
+    }
+  }
+    
+    .svg_block {
+      /* Возможно, нужно подправить стили родителя */
+      display: flex;
+      align-items: center; /* Выровнять иконку по центру вертикально */
+       /* Другие стили... */
+    }
+    
+    .icon-placeholder {
+        width: 40px; /* Такой же размер, как у иконки */
+        height: 40px;
+        margin-right: 10px;
+        border-radius: 4px; /* Скругление углов */
+    }

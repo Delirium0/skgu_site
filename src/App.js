@@ -17,15 +17,14 @@ import ARComponent from "./ar/ARComponent.jsx";
 import Events_create from "./account/events_create/Events_create.jsx";
 import Test from "./ar/Test.jsx";
 import FacultyPage from "./faculties/FacultyPage.jsx";
+import FeedbackPage from "./account/feetback/FeedbackPage.jsx";
 function App() {
   return (
     <div className="App">
       <div className={cl.main_content}>
         <Routes>
-          {/* Маршрут AuthPage - без PageLayout */}
           <Route path='/auth' element={<AuthPage />}></Route>
 
-          {/* Все остальные маршруты - оборачиваем в PageLayout */}
           <Route path='/' element={
             <PageLayout>
               <Home />
@@ -91,6 +90,12 @@ function App() {
               <FacultyPage />
             </PageLayout>
           }></Route>
+            <Route path='/feetback' element={
+            <PageLayout>
+              <FeedbackPage />
+            </PageLayout>
+          }></Route>
+          
         </Routes>
       </div>
     </div>

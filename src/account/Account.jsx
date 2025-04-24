@@ -17,6 +17,7 @@ const Account = () => {
     { name: "Результаты экзаменов", linkTo: "/exams", SvgComponent: Exams }, 
     { name: "Важные ссылки", linkTo: "/links", SvgComponent: Links },
     { name: "Мероприятия", linkTo: "/events_create", SvgComponent: Svg5 },
+    { name: "Оставить отзыв", linkTo: "/feetback", SvgComponent: Svg5 },
   ];
 
   return (
