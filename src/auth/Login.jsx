@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AuthPage.module.css';
 import { useAuth } from './AuthProvider';
+import { jwtDecode } from "jwt-decode";
+
 const Login = () => {
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
@@ -47,16 +49,19 @@ const Login = () => {
                 setIsSuccess(false);
                 return;
             }
-
             const responseData = await response.json();
             const token = responseData.access_token;
 
             if (token) {
+                const decodedPayload = jwtDecode(token); 
+                const roleFromToken = decodedPayload.role; 
+
                 const userData = {
                     token: token,
                     login: userLogin,
+                    role: roleFromToken,
                 };
-                login(userData); // Вызываем функцию login из вашего AuthContext и передаем объект userData
+                login(userData); 
                 setMessage('Авторизация успешна!');
                 setIsSuccess(true);
                 setTimeout(() => {

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import Postlist from "./lessons/Postlist";
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'; // Импортируем useLocation
+// src/App.js
+import React from "react";
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Home from './home/Home.jsx';
 import Search from "./search/Search";
 import cl from './Main.module.css';
@@ -17,85 +17,106 @@ import ARComponent from "./ar/ARComponent.jsx";
 import Events_create from "./account/events_create/Events_create.jsx";
 import Test from "./ar/Test.jsx";
 import FacultyPage from "./faculties/FacultyPage.jsx";
-import FeedbackPage from "./account/feetback/FeedbackPage.jsx";
+import FeedbackPage from "./account/feetback/FeedbackPage.jsx"; // Убедись, что путь верный
+
+// --- Добавляем импорт ProtectedRoute ---
+import ProtectedRoute from "./ProtectedRoute.jsx";
+// --- Создай компоненты для админки/модерации (пока можно заглушки) ---
+const AdminPanel = () => <div><h1>Панель Администратора</h1><p>Доступ только для админов.</p></div>;
+const ModerationPage = () => <div><h1>Страница Модерации</h1><p>Доступ для админов и модераторов.</p></div>;
+// ---
+
 function App() {
   return (
     <div className="App">
       <div className={cl.main_content}>
         <Routes>
-          <Route path='/auth' element={<AuthPage />}></Route>
+          {/* Маршрут AuthPage - без PageLayout и без защиты */}
+          <Route path='/auth' element={<AuthPage />} />
 
-          <Route path='/' element={
-            <PageLayout>
-              <Home />
-            </PageLayout>
-          } />
-          <Route path='/search' element={
-            <PageLayout>
-              <Search />
-            </PageLayout>
-          }></Route>
+          {/* --- ОБЫЧНЫЕ МАРШРУТЫ (ДОСТУПНЫ ВСЕМ АУТЕНТИФИЦИРОВАННЫМ?) --- */}
+          {/* Если какие-то из этих страниц требуют просто входа, их тоже можно обернуть */}
+          {/* <ProtectedRoute allowedRoles={['user', 'admin', 'teacher', 'moderator']}> ... </ProtectedRoute> */}
+          {/* Но если они доступны и анонимам (кроме /account и т.п.), то оставляем как есть */}
+
+          <Route path='/' element={<PageLayout><Home /></PageLayout>} />
+          <Route path='/search' element={<PageLayout><Search /></PageLayout>} />
+          <Route path='/location/:id' element={<PageLayout><Location /></PageLayout>} />
+          <Route path='/faculty/:facultyId' element={<PageLayout><FacultyPage /></PageLayout>} />
+          <Route path='/ar_page' element={<PageLayout><Test /></PageLayout>} />
+          <Route path='/ar' element={<PageLayout><ARComponent /></PageLayout>} />
+
+          {/* --- МАРШРУТЫ, ТРЕБУЮЩИЕ АУТЕНТИФИКАЦИИ (ЛЮБОЙ РОЛИ) --- */}
+          {/* Можно создать массив со всеми ролями или просто проверить, что user существует */}
+          {/* Для простоты, будем считать, что ProtectedRoute без allowedRoles проверяет только логин */}
+          {/* Но лучше явно указать роли, если есть user, teacher и т.д. */}
           <Route path='/account' element={
-            <PageLayout>
-              <Account />
-            </PageLayout>
-          }></Route>
-          <Route path='/raiting' element={
-            <PageLayout>
-              <Subject_page />
-            </PageLayout>
-          }></Route>
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}> {/* Пример всех ролей */}
+                  <PageLayout><Account /></PageLayout>
+              </ProtectedRoute>
+          } />
+           <Route path='/raiting' element={
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
+                  <PageLayout><Subject_page /></PageLayout>
+              </ProtectedRoute>
+          } />
           <Route path='/links' element={
-            <PageLayout>
-              <Links />
-            </PageLayout>
-          }></Route>
-          <Route path='/schedule_actual' element={
-            <PageLayout>
-              <AccountRoute />
-            </PageLayout>
-          }></Route>
-          <Route path='/next_lesson' element={
-            <PageLayout>
-              <NextLessonRoute />
-            </PageLayout>
-          }></Route>
-          <Route path='/schedule' element={
-            <PageLayout>
-              <Schedule />
-            </PageLayout>
-          }></Route>
-          <Route path='/location/:id' element={
-            <PageLayout>
-              <Location />
-            </PageLayout>
-          }></Route>
-            <Route path='/ar_page' element={
-            <PageLayout>
-              <Test />
-            </PageLayout>
-          }></Route>
-          <Route path='/ar' element={
-            <PageLayout>
-              <ARComponent />
-            </PageLayout>
-          }></Route>
-            <Route path='/events_create' element={
-            <PageLayout>
-              <Events_create />
-            </PageLayout>
-          }></Route>
-              <Route path='/faculty/:facultyId' element={
-            <PageLayout>
-              <FacultyPage />
-            </PageLayout>
-          }></Route>
-            <Route path='/feetback' element={
-            <PageLayout>
-              <FeedbackPage />
-            </PageLayout>
-          }></Route>
-          
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
+                  <PageLayout><Links /></PageLayout>
+              </ProtectedRoute>
+          } />
+           <Route path='/schedule_actual' element={
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
+                  <PageLayout><AccountRoute /></PageLayout>
+              </ProtectedRoute>
+          } />
+           <Route path='/next_lesson' element={
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
+                  <PageLayout><NextLessonRoute /></PageLayout>
+              </ProtectedRoute>
+          } />
+           <Route path='/schedule' element={
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
+                  <PageLayout><Schedule /></PageLayout>
+              </ProtectedRoute>
+          } />
+           <Route path='/feetback' element={ /* Опечатка в пути? Должно быть feedback? */
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
+                   <PageLayout><FeedbackPage /></PageLayout>
+              </ProtectedRoute>
+          } />
+          {/* <Route path='/events_create' element={ // Кто может создавать события?
+              <ProtectedRoute allowedRoles={['admin', 'moderator', 'teacher']}> // Пример
+                  <PageLayout><Events_create /></PageLayout>
+              </ProtectedRoute>
+          } /> */}
+           <Route path='/events_create' element={<PageLayout><Events_create /></PageLayout>} /> {/* Оставил пока без защиты для примера */}
+
+
+          {/* --- АДМИНКА (только для 'admin') --- */}
+          <Route path='/admin' element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <PageLayout>
+                <AdminPanel /> {/* Замени на свой компонент админки */}
+              </PageLayout>
+            </ProtectedRoute>
+          } />
+
+          {/* --- СТРАНИЦА МОДЕРАЦИИ (для 'admin' и 'moderator') --- */}
+          <Route path='/moderation' element={
+            <ProtectedRoute allowedRoles={['admin', 'moderator']}>
+              <PageLayout>
+                <ModerationPage /> {/* Замени на свой компонент модерации */}
+              </PageLayout>
+            </ProtectedRoute>
+          } />
+
+           {/* --- Можно добавить маршрут для неавторизованного доступа --- */}
+           {/* <Route path='/unauthorized' element={<PageLayout><h1>Доступ запрещен</h1></PageLayout>} /> */}
+
+           {/* --- Маршрут 404 (если ничего не совпало) --- */}
+           {/* <Route path="*" element={<PageLayout><NotFoundPage /></PageLayout>} /> */}
+
         </Routes>
       </div>
     </div>
