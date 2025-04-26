@@ -41,6 +41,11 @@ const AdminNavigation = () => {
                         Отзывы
                     </NavLink>
                 </li>
+                <li>
+                    <NavLink to="/admin/locations" className={navLinkClassName}>
+                        Локации
+                    </NavLink>
+                </li>
                
             </ul>
         </nav>

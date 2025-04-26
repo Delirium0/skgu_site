@@ -82,7 +82,43 @@ export const deleteFeedbackAdmin = (feedbackId, token) => {
 export const deleteEventAdmin = (eventId, token) => {
     return fetchAdminAPI(`/events/${eventId}`, token, { method: 'DELETE' });
 };
+export const getAllLocationsAdmin = (token) => {
+    return fetchAdminAPI('/locations/admin/locations', token, { method: 'GET' });
+};
+export const getLocationByIdAdmin = (locationId, token) => {
+    return fetchAdminAPI(`/locations/admin/locations/${locationId}`, token, { method: 'GET' });
+};
+export const createLocationAdmin = (locationData, token) => {
+    // locationData должен содержать поле bounds: [[lat, lng], ...]
+    if (!locationData.bounds || locationData.bounds.length < 3) {
+        return Promise.reject(new Error("Для создания локации необходимо указать минимум 3 точки границ (bounds)."));
+    }
+    // Используем публичный POST, если он доступен админу для создания
+     // Если для POST /locations нужны админ права, измени эндпоинт на /admin/locations
+    return fetchAdminAPI('/locations/locations', token, { // Проверь эндпоинт и права доступа на бэке!
+        method: 'POST',
+        body: JSON.stringify(locationData),
+    });
+};
 
+export const updateLocationAdmin = (locationId, locationData, token) => {
+    // locationData должен содержать поле bounds: [[lat, lng], ...]
+    // Бэкенд ожидает bounds в теле запроса (согласно предложенной реализации роутера)
+     if (locationData.bounds === undefined) { // Убедимся что bounds переданы (могут быть пустым массивом)
+         return Promise.reject(new Error("Данные для обновления границ (bounds) отсутствуют."));
+     }
+     if (locationData.bounds !== null && locationData.bounds.length > 0 && locationData.bounds.length < 3) {
+        return Promise.reject(new Error("Для обновления границ необходимо указать минимум 3 точки или пустой массив/null для удаления."));
+     }
+    return fetchAdminAPI(`/locations/admin/locations/${locationId}`, token, {
+        method: 'PUT',
+        body: JSON.stringify(locationData),
+    });
+};
+
+export const deleteLocationAdmin = (locationId, token) => {
+    return fetchAdminAPI(`/locations/admin/locations/${locationId}`, token, { method: 'DELETE' });
+};
 export const approveEventAdmin = (eventId, token) => {
     return fetchAdminAPI(`/events/${eventId}/moderate`, token, { method: 'PATCH' }); // Используем PATCH
 };

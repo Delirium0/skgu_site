@@ -25,6 +25,8 @@ import AdminFacultiesListPage from "./admin/faculties/AdminFacultiesListPage"; /
 import AdminFacultyFormPage from "./admin/faculties/AdminFacultyFormPage";   // Импорт формы
 import EventModerationPage from "./admin/moderation/EventModerationPage.jsx";
 import AdminFeedbacksListPage from "./admin/feedbacks/AdminFeedbacksListPage.jsx";
+import AdminLocationsListPage from "./admin/locations/AdminLocationsListPage"; // Импорт списка
+import AdminLocationFormPage from "./admin/locations/AdminLocationFormPage";   // Импорт формы
 // --- Добавляем импорт ProtectedRoute ---
 import ProtectedRoute from "./ProtectedRoute.jsx";
 // --- Создай компоненты для админки/модерации (пока можно заглушки) ---
@@ -100,32 +102,35 @@ function App() {
 
 
            <Route path="/admin" element={
-  <ProtectedRoute allowedRoles={['admin']}>
-    <PageLayout>
-      <AdminDashboardLayout />
-    </PageLayout>
-  </ProtectedRoute>
-}>
-  {/* Вложенные маршруты для админки */}
-  
-  {/* Главная страница админки (если нужна) */}
-  {/* <Route index element={<AdminHomePage />} /> */}
+          <ProtectedRoute allowedRoles={['admin']}>
+            <PageLayout>
+              <AdminDashboardLayout />
+            </PageLayout>
+          </ProtectedRoute>
+        }>
+          
 
-  {/* События */}
-  <Route path="events" element={<AdminEventsListPage />} />
-  <Route path="events/new" element={<AdminEventFormPage />} />
-  <Route path="events/:eventId/edit" element={<AdminEventFormPage />} />
+          {/* События */}
+          <Route path="events" element={<AdminEventsListPage />} />
+          <Route path="events/new" element={<AdminEventFormPage />} />
+          <Route path="events/:eventId/edit" element={<AdminEventFormPage />} />
 
-  {/* Факультеты */}
-  <Route path="faculties" element={<AdminFacultiesListPage />} />
-  <Route path="faculties/new" element={<AdminFacultyFormPage />} />
-  <Route path="faculties/:facultyId/edit" element={<AdminFacultyFormPage />} />
-  <Route path="moderation/events" element={<EventModerationPage />} />
+          {/* Факультеты */}
+          <Route path="faculties" element={<AdminFacultiesListPage />} />
+          <Route path="faculties/new" element={<AdminFacultyFormPage />} />
+          <Route path="faculties/:facultyId/edit" element={<AdminFacultyFormPage />} />
+          <Route path="moderation/events" element={<EventModerationPage />} />
 
-  {/* Отзывы */}
-  <Route path="feedbacks" element={<AdminFeedbacksListPage />} />
+          {/* Отзывы */}
+          <Route path="feedbacks" element={<AdminFeedbacksListPage />} />
 
-</Route>
+
+            {/* Раздел Локации */}
+            <Route path="locations" element={<AdminLocationsListPage />} />
+            <Route path="locations/new" element={<AdminLocationFormPage />} />
+            <Route path="locations/:locationId/edit" element={<AdminLocationFormPage />} />
+
+        </Route>
           <Route path='/moderation' element={
             <ProtectedRoute allowedRoles={['admin', 'moderator']}>
               <PageLayout>
