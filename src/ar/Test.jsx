@@ -14,7 +14,7 @@ const Test = () => {
   const [error, setError] = useState(null);
   const [arConfigNotFound, setArConfigNotFound] = useState(false);
 
-  const buildingOptions = ['6', '7', '8'];
+  const buildingOptions = ['1','2','3','4','5', '6'];
   const floorOptions = ['1', '2', '3', '4', '5'];
 
   const sceneRef = useRef(null);
