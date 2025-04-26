@@ -91,7 +91,7 @@ const Test = () => {
         if (error.response && error.response.status === 404) {
           setArConfigNotFound(true);
           // Удаляем overlay элементы при 404 ошибке
-          removeMindarOverlays();
+          // removeMindarOverlays();
         } else {
           setError(error);
         }
