@@ -5,7 +5,7 @@ import "./Event.css";
 import Down_info_block from "./Down_info_block";
 
 const Event = ({ event_info }) => {
-
+  console.log(event_info)
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -33,6 +33,7 @@ const Event = ({ event_info }) => {
         time={formattedTime}
         raiting={event_info.event_raiting}
         event_name={event_info.event_name}
+        eventId={event_info.id}
       />
     </div>
   );

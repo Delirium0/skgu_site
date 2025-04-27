@@ -27,9 +27,13 @@ import EventModerationPage from "./admin/moderation/EventModerationPage.jsx";
 import AdminFeedbacksListPage from "./admin/feedbacks/AdminFeedbacksListPage.jsx";
 import AdminLocationsListPage from "./admin/locations/AdminLocationsListPage"; // Импорт списка
 import AdminLocationFormPage from "./admin/locations/AdminLocationFormPage";   // Импорт формы
-// --- Добавляем импорт ProtectedRoute ---
+import EventPage from "./events_page/Eventspage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-// --- Создай компоненты для админки/модерации (пока можно заглушки) ---
+import ExamResultsPage from "./account/exam_results/ExamResultsPage.jsx";
+import AdminLinksListPage from "./admin/links/AdminLinksListPage";
+import AdminLinkFormPage from "./admin/links/AdminLinkFormPage";
+import AdminUsersListPage from "./admin/users/AdminUsersListPage";
+import AdminUserFormPage from "./admin/users/AdminUserFormPage";
 const AdminPanel = () => <div><h1>Панель Администратора</h1><p>Доступ только для админов.</p></div>;
 const ModerationPage = () => <div><h1>Страница Модерации</h1><p>Доступ для админов и модераторов.</p></div>;
 // ---
@@ -39,13 +43,8 @@ function App() {
     <div className="App">
       <div className={cl.main_content}>
         <Routes>
-          {/* Маршрут AuthPage - без PageLayout и без защиты */}
           <Route path='/auth' element={<AuthPage />} />
 
-          {/* --- ОБЫЧНЫЕ МАРШРУТЫ (ДОСТУПНЫ ВСЕМ АУТЕНТИФИЦИРОВАННЫМ?) --- */}
-          {/* Если какие-то из этих страниц требуют просто входа, их тоже можно обернуть */}
-          {/* <ProtectedRoute allowedRoles={['user', 'admin', 'teacher', 'moderator']}> ... </ProtectedRoute> */}
-          {/* Но если они доступны и анонимам (кроме /account и т.п.), то оставляем как есть */}
 
           <Route path='/' element={<PageLayout><Home /></PageLayout>} />
           <Route path='/search' element={<PageLayout><Search /></PageLayout>} />
@@ -54,12 +53,13 @@ function App() {
           <Route path='/ar_page' element={<PageLayout><Test /></PageLayout>} />
           <Route path='/ar' element={<PageLayout><ARComponent /></PageLayout>} />
 
-          {/* --- МАРШРУТЫ, ТРЕБУЮЩИЕ АУТЕНТИФИКАЦИИ (ЛЮБОЙ РОЛИ) --- */}
-          {/* Можно создать массив со всеми ролями или просто проверить, что user существует */}
-          {/* Для простоты, будем считать, что ProtectedRoute без allowedRoles проверяет только логин */}
-          {/* Но лучше явно указать роли, если есть user, teacher и т.д. */}
+          <Route path='/exams' element={ 
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}> 
+                  <PageLayout><ExamResultsPage /></PageLayout>
+              </ProtectedRoute>
+          } />
           <Route path='/account' element={
-              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}> {/* Пример всех ролей */}
+              <ProtectedRoute allowedRoles={['admin', 'user', 'teacher', 'moderator']}>
                   <PageLayout><Account /></PageLayout>
               </ProtectedRoute>
           } />
@@ -93,13 +93,10 @@ function App() {
                    <PageLayout><FeedbackPage /></PageLayout>
               </ProtectedRoute>
           } />
-          {/* <Route path='/events_create' element={ // Кто может создавать события?
-              <ProtectedRoute allowedRoles={['admin', 'moderator', 'teacher']}> // Пример
-                  <PageLayout><Events_create /></PageLayout>
-              </ProtectedRoute>
-          } /> */}
+        
            <Route path='/events_create' element={<PageLayout><Events_create /></PageLayout>} /> {/* Оставил пока без защиты для примера */}
 
+           <Route path='/events/:eventId' element={<PageLayout><EventPage /></PageLayout>} />
 
            <Route path="/admin" element={
           <ProtectedRoute allowedRoles={['admin']}>
@@ -129,7 +126,16 @@ function App() {
             <Route path="locations" element={<AdminLocationsListPage />} />
             <Route path="locations/new" element={<AdminLocationFormPage />} />
             <Route path="locations/:locationId/edit" element={<AdminLocationFormPage />} />
+              {/* ссылки*/}
+              <Route path="links" element={<AdminLinksListPage />} />
+              <Route path="links/new" element={<AdminLinkFormPage />} />
+              <Route path="links/:linkId/edit" element={<AdminLinkFormPage />} />
 
+              
+              {/* --- ДОБАВЛЯЕМ МАРШРУТЫ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ --- */}
+              <Route path="users" element={<AdminUsersListPage />} />
+              <Route path="users/new" element={<AdminUserFormPage />} />
+              <Route path="users/:userId/edit" element={<AdminUserFormPage />} />
         </Route>
           <Route path='/moderation' element={
             <ProtectedRoute allowedRoles={['admin', 'moderator']}>

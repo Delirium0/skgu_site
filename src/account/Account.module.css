@@ -46,7 +46,7 @@
 .faculty_icon svg {
     min-width: 70px;
     min-height: 70px;
-    fill: white; 
+    fill: black; /* Изменено на черный */
 }
 
 .progress_icon {

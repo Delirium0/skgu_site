@@ -115,7 +115,80 @@ export const updateLocationAdmin = (locationId, locationData, token) => {
         body: JSON.stringify(locationData),
     });
 };
+export const getAllImportantLinksAdmin = (token) => {
+    return fetchAdminAPI('/important_links/', token, { method: 'GET' });
+};
 
+export const getImportantLinkByIdAdmin = (linkId, token) => {
+    return fetchAdminAPI(`/important_links/${linkId}`, token, { method: 'GET' });
+};
+
+// linkData: { link: string, link_text: string, icon: string | null (base64) }
+export const createImportantLinkAdmin = (linkData, token) => {
+    if (!linkData.link || !linkData.link_text) {
+        return Promise.reject(new Error("URL ссылки и Текст ссылки обязательны."));
+    }
+    return fetchAdminAPI('/important_links/', token, {
+        method: 'POST',
+        body: JSON.stringify(linkData),
+    });
+};
+
+// linkData: { link?: string, link_text?: string, icon?: string | null (base64) }
+export const updateImportantLinkAdmin = (linkId, linkData, token) => {
+    return fetchAdminAPI(`/important_links/${linkId}`, token, {
+        method: 'PUT', // Используем PUT, т.к. в роутере FastAPI указан PUT
+        body: JSON.stringify(linkData),
+    });
+};
+
+export const deleteImportantLinkAdmin = (linkId, token) => {
+    return fetchAdminAPI(`/important_links/${linkId}`, token, { method: 'DELETE' });
+};
+
+
+export const getAllUsersAdmin = (token) => {
+    // Нужен эндпоинт на бэкенде для получения списка пользователей
+    // Предположим, он /admin/users/
+    return fetchAdminAPI('/admin/users/', token, { method: 'GET' });
+};
+
+export const getUserByIdAdmin = (userId, token) => {
+    // Нужен эндпоинт на бэкенде для получения одного пользователя
+    // Предположим, он /admin/users/{user_id}
+    return fetchAdminAPI(`/admin/users/${userId}`, token, { method: 'GET' });
+};
+
+// userData: { login, password (plain), role, student_id?, semester?, year?, cmbPeriod?, group_id? }
+export const createUserAdmin = (userData, token) => {
+    // Валидация обязательных полей
+    if (!userData.login || !userData.password || !userData.role) {
+        return Promise.reject(new Error("Логин, пароль и роль обязательны для создания пользователя."));
+    }
+    // Эндпоинт для создания пользователя админом
+    // Предположим, он /admin/users/
+    return fetchAdminAPI('/admin/users/', token, {
+        method: 'POST',
+        body: JSON.stringify(userData),
+    });
+};
+
+// userData: { login?, password? (plain), role?, student_id?, semester?, year?, cmbPeriod?, group_id? }
+// ВАЖНО: Бэкенд должен уметь обрабатывать обновление пароля (plain text -> hash)
+export const updateUserAdmin = (userId, userData, token) => {
+     // Эндпоинт для обновления пользователя админом
+    // Предположим, он /admin/users/{user_id}
+    return fetchAdminAPI(`/admin/users/${userId}`, token, {
+        method: 'PUT', // Или PATCH, если бэкенд поддерживает частичное обновление
+        body: JSON.stringify(userData),
+    });
+};
+
+export const deleteUserAdmin = (userId, token) => {
+     // Эндпоинт для удаления пользователя админом
+    // Предположим, он /admin/users/{user_id}
+    return fetchAdminAPI(`/admin/users/${userId}`, token, { method: 'DELETE' });
+};
 export const deleteLocationAdmin = (locationId, token) => {
     return fetchAdminAPI(`/locations/admin/locations/${locationId}`, token, { method: 'DELETE' });
 };

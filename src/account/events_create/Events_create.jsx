@@ -15,6 +15,8 @@ const Events_сreate = () => {
         event_description: '',
         contact_phone: '',
         contact_email: '',
+        address: '',
+
     });
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -101,6 +103,8 @@ const Events_сreate = () => {
                 event_description: '',
                 contact_phone: '',
                 contact_email: '',
+                address: '',
+
             });
         } catch (error) {
             setErrorMessage(`Ошибка при создании события: ${error.message}`);
@@ -159,7 +163,7 @@ const Events_сreate = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="event_creator_image" className={styles.formLabel}>Изображение создателя (необязательно):</label>
+                            <label htmlFor="event_creator_image" className={styles.formLabel}>Изображение создателя:</label>
                             <input
                                 type="file" // Изменено на type="file"
                                 id="event_creator_image"
@@ -185,7 +189,7 @@ const Events_сreate = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="event_description" className={styles.formLabel}>Описание события (необязательно):</label>
+                            <label htmlFor="event_description" className={styles.formLabel}>Описание события:</label>
                             <textarea
                                 id="event_description"
                                 name="event_description"
@@ -196,7 +200,7 @@ const Events_сreate = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="contact_phone" className={styles.formLabel}>Контактный телефон (необязательно):</label>
+                            <label htmlFor="contact_phone" className={styles.formLabel}>Контактный телефон:</label>
                             <input
                                 type="tel"
                                 id="contact_phone"
@@ -208,7 +212,7 @@ const Events_сreate = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="contact_email" className={styles.formLabel}>Контактный email (необязательно):</label>
+                            <label htmlFor="contact_email" className={styles.formLabel}>Контактный email:</label>
                             <input
                                 type="email"
                                 id="contact_email"
@@ -218,7 +222,17 @@ const Events_сreate = () => {
                                 className={styles.formInput}
                             />
                         </div>
-
+                        <div className={styles.formGroup}>
+                        <label htmlFor="address" className={styles.formLabel}>Адрес проведения:</label>
+                        <input
+                            type="text"
+                            id="address"
+                            name="address" // Важно: name совпадает с ключом в state
+                            value={eventData.address}
+                            onChange={handleChange}
+                            className={styles.formInput}
+                        />
+                    </div>
 
                         <button type="submit" className={styles.submitButton} disabled={loading}>
                             {loading ? 'Создание...' : 'Создать событие'}
