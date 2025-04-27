@@ -4,30 +4,37 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { getEventByIdAdmin, createEventAdmin, updateEventAdmin } from './eventAdminService';
 import styles from './AdminEvents.module.css';
-
 const AdminEventFormPage = () => {
-    const { eventId } = useParams(); // Получаем ID из URL, если он есть (для редактирования)
-    const isEditMode = Boolean(eventId); // Определяем режим: true - редактирование, false - создание
+    const { eventId } = useParams();
+    const isEditMode = Boolean(eventId);
     const navigate = useNavigate();
     const { user } = useAuth();
     const token = user?.token;
 
-    // Состояние формы
+    // Добавляем address в начальное состояние
     const [formData, setFormData] = useState({
         event_name: '',
         event_description: '',
-        event_time: '', // Будет в формате YYYY-MM-DDTHH:mm
-        image_background: '', // URL
-        event_creator_name: '', // Имя создателя (как в модели)
-        event_creator_image: '', // URL аватарки создателя (как в модели)
+        event_time: '',
+        image_background: '', // URL или Base64? API ожидает строку
+        event_creator_name: '',
+        event_creator_image: '', // URL или Base64?
         contact_phone: '',
         contact_email: '',
-        // event_rating не редактируем вручную? Оно вычисляется?
-        // creator_id устанавливается бэкендом
+        address: '', // <-- ДОБАВЛЕНО
+        // Добавим is_moderate для формы редактирования
+        is_moderate: false,
     });
+
+    // --- Состояния для файлов (если нужна загрузка Base64) ---
+    // Если image_background и event_creator_image должны быть файлами,
+    // нужно добавить отдельные состояния и обработчики как в AdminLinkFormPage
+    // Пока оставляем как строки (URL или уже Base64)
+    // ---------------------------------------------------------
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [formError, setFormError] = useState(null); // Ошибки валидации формы
+    const [formError, setFormError] = useState(null);
 
     // Загрузка данных для редактирования
     useEffect(() => {
@@ -36,7 +43,6 @@ const AdminEventFormPage = () => {
             setError(null);
             getEventByIdAdmin(eventId, token)
                 .then(data => {
-                    // Форматируем дату для input[type=datetime-local]
                     const formattedDate = data.event_time
                         ? new Date(new Date(data.event_time).getTime() - new Date().getTimezoneOffset() * 60000)
                             .toISOString().slice(0, 16)
@@ -51,6 +57,8 @@ const AdminEventFormPage = () => {
                         event_creator_image: data.event_creator_image || '',
                         contact_phone: data.contact_phone || '',
                         contact_email: data.contact_email || '',
+                        address: data.address || '', // <-- ДОБАВЛЕНО
+                        is_moderate: data.is_moderate || false, // Загружаем статус модерации
                     });
                 })
                 .catch(err => {
@@ -59,14 +67,17 @@ const AdminEventFormPage = () => {
                 })
                 .finally(() => setLoading(false));
         }
-        // Если режим создания, форма остается с начальными пустыми значениями
     }, [isEditMode, eventId, token]);
 
     // Обработчик изменений в полях формы
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        setFormError(null); // Сбрасываем ошибку формы при изменении
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value // Обработка чекбокса
+        }));
+        setFormError(null);
+        setError(null); // Сбрасываем и ошибку API
     };
 
     // Обработчик отправки формы
@@ -80,63 +91,71 @@ const AdminEventFormPage = () => {
         setError(null);
         setFormError(null);
 
-        // Подготовка данных для отправки
-        // Преобразуем дату обратно в ISO строку с учетом UTC (или как ожидает бэк)
-        // Важно: input datetime-local возвращает строку без информации о таймзоне.
-        // Бэкенд должен быть готов парсить такую строку (FastAPI обычно справляется).
-        // Или нужно добавить 'Z' или смещение вручную перед отправкой, если бэк требует ISO 8601.
+        // Готовим данные к отправке
         const dataToSend = { ...formData };
-        // Если event_time пустой, не отправляем его или отправляем null, зависит от бэкенда
         if (!dataToSend.event_time) {
-           delete dataToSend.event_time; // Или dataToSend.event_time = null;
+           delete dataToSend.event_time;
         }
+         // Преобразуем дату в ISO перед отправкой, если она есть
+         // Убедимся, что бэкенд (Pydantic/SQLAlchemy) правильно обработает это
+        if (dataToSend.event_time) {
+             try {
+                 dataToSend.event_time = new Date(dataToSend.event_time).toISOString();
+             } catch (dateError) {
+                  console.error("Ошибка преобразования даты:", dateError);
+                  setFormError("Неверный формат даты и времени.");
+                  setLoading(false);
+                  return;
+             }
+        }
+
+        // Убираем поля, которых нет в схемах API (если они случайно попали)
+        // delete dataToSend.someOtherField;
 
         try {
             if (isEditMode) {
                 // Режим редактирования (PUT)
-                // Отправляем только те поля, которые есть в EventUpdate схеме
+                // Включаем address и is_moderate
                 const updateData = {
                     event_name: dataToSend.event_name,
                     event_description: dataToSend.event_description,
-                    event_time: dataToSend.event_time, // Отправляем строку как есть
+                    event_time: dataToSend.event_time,
                     image_background: dataToSend.image_background,
                     event_creator_name: dataToSend.event_creator_name,
                     event_creator_image: dataToSend.event_creator_image,
                     contact_phone: dataToSend.contact_phone,
                     contact_email: dataToSend.contact_email,
-                    // Рейтинг не обновляем через форму
+                    address: dataToSend.address, // <-- ДОБАВЛЕНО
+                    is_moderate: dataToSend.is_moderate, // <-- ДОБАВЛЕНО
                 };
                 await updateEventAdmin(eventId, updateData, token);
-                alert('Событие успешно обновлено!');
-                navigate('/admin/events'); // Возвращаемся к списку
+                alert('Событие успешно обновлено!'); // Замени на toast если нужно
+                navigate('/admin/events');
             } else {
                 // Режим создания (POST)
-                // Отправляем поля, которые есть в EventCreate схеме
+                // Включаем address, is_moderate не отправляем (он по умолчанию false)
                 const createData = {
                     event_name: dataToSend.event_name,
                     event_description: dataToSend.event_description,
-                    event_time: dataToSend.event_time, // Отправляем строку как есть
+                    event_time: dataToSend.event_time,
                     image_background: dataToSend.image_background,
                     event_creator_name: dataToSend.event_creator_name,
                     event_creator_image: dataToSend.event_creator_image,
                     contact_phone: dataToSend.contact_phone,
                     contact_email: dataToSend.contact_email,
-                    // creator_id устанавливается бэком
+                    address: dataToSend.address, // <-- ДОБАВЛЕНО
                 };
-                const newEvent = await createEventAdmin(createData, token);
-                alert('Событие успешно создано!');
-                navigate('/admin/events'); // Возвращаемся к списку (или на страницу редактирования?)
-                // navigate(`/admin/events/${newEvent.id}/edit`);
+                await createEventAdmin(createData, token);
+                alert('Событие успешно создано!'); // Замени на toast если нужно
+                navigate('/admin/events');
             }
         } catch (err) {
             console.error("Ошибка сохранения события:", err);
-            // Попытка отобразить специфическую ошибку валидации от бэка
-            if (err.message.includes("Не заполнены")) { // Проверка на нашу клиентскую ошибку
+             if (err.message.includes("Не заполнены")) {
                  setFormError(err.message);
             } else {
                 setError(err.message || "Не удалось сохранить событие.");
             }
-
         } finally {
             setLoading(false);
         }
@@ -147,9 +166,8 @@ const AdminEventFormPage = () => {
         return <div className={styles.statusMessage}>Загрузка данных события...</div>;
     }
 
-    if (error) {
-        return <div className={`${styles.statusMessage} ${styles.error}`}>Ошибка: {error}</div>;
-    }
+    // Ошибка API приоритетнее ошибки формы
+    const displayError = error || formError;
 
     return (
         <div className={styles.adminPageContainer}>
@@ -157,122 +175,94 @@ const AdminEventFormPage = () => {
                 {isEditMode ? `Редактировать событие (ID: ${eventId})` : 'Создать новое событие'}
             </h1>
 
+            {/* Сообщение об ошибке */}
+            {displayError && <p className={styles.formError} style={{ marginBottom: '15px' }}>{displayError}</p>}
+
+
             <form onSubmit={handleSubmit} className={styles.adminForm}>
                 {/* Поле Название */}
                 <div className={styles.formGroup}>
                     <label htmlFor="event_name">Название события *</label>
-                    <input
-                        type="text"
-                        id="event_name"
-                        name="event_name"
-                        value={formData.event_name}
-                        onChange={handleChange}
-                        required
-                        disabled={loading}
-                    />
+                    <input type="text" id="event_name" name="event_name" value={formData.event_name} onChange={handleChange} required disabled={loading}/>
                 </div>
 
                 {/* Поле Описание */}
                 <div className={styles.formGroup}>
                     <label htmlFor="event_description">Описание</label>
-                    <textarea
-                        id="event_description"
-                        name="event_description"
-                        value={formData.event_description}
-                        onChange={handleChange}
-                        rows="5"
-                        disabled={loading}
-                    />
+                    <textarea id="event_description" name="event_description" value={formData.event_description} onChange={handleChange} rows="5" disabled={loading}/>
                 </div>
 
                  {/* Поле Время события */}
                  <div className={styles.formGroup}>
                     <label htmlFor="event_time">Время события *</label>
+                    <input type="datetime-local" id="event_time" name="event_time" value={formData.event_time} onChange={handleChange} required disabled={loading}/>
+                 </div>
+
+                 {/* --- ДОБАВЛЕНО ПОЛЕ АДРЕСА --- */}
+                 <div className={styles.formGroup}>
+                    <label htmlFor="address">Адрес проведения</label>
                     <input
-                        type="datetime-local"
-                        id="event_time"
-                        name="event_time"
-                        value={formData.event_time}
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={formData.address}
                         onChange={handleChange}
-                        required
+                        placeholder="Например, Пушкина 76"
                         disabled={loading}
                     />
                  </div>
+                 {/* --- КОНЕЦ ПОЛЯ АДРЕСА --- */}
+
 
                  {/* Поле URL Фона */}
                 <div className={styles.formGroup}>
-                    <label htmlFor="image_background">URL фонового изображения *</label>
-                    <input
-                        type="url"
-                        id="image_background"
-                        name="image_background"
-                        value={formData.image_background}
-                        onChange={handleChange}
-                        placeholder="https://example.com/image.jpg"
-                        required
-                        disabled={loading}
-                    />
+                    <label htmlFor="image_background">URL/Base64 фонового изображения *</label>
+                    {/* Если нужен File Input для Base64, замени этот input */}
+                    <input type="text" id="image_background" name="image_background" value={formData.image_background} onChange={handleChange} placeholder="https://... или data:image/..." required disabled={loading}/>
                 </div>
 
-                 {/* Поле Имя создателя (события, не пользователя) */}
+                 {/* Поле Имя создателя */}
                 <div className={styles.formGroup}>
                     <label htmlFor="event_creator_name">Имя организатора *</label>
-                    <input
-                        type="text"
-                        id="event_creator_name"
-                        name="event_creator_name"
-                        value={formData.event_creator_name}
-                        onChange={handleChange}
-                        required
-                        disabled={loading}
-                    />
+                    <input type="text" id="event_creator_name" name="event_creator_name" value={formData.event_creator_name} onChange={handleChange} required disabled={loading}/>
                 </div>
 
-                 {/* Поле URL Аватарки создателя (события) */}
+                 {/* Поле URL Аватарки создателя */}
                 <div className={styles.formGroup}>
-                    <label htmlFor="event_creator_image">URL изображения организатора</label>
-                    <input
-                        type="url"
-                        id="event_creator_image"
-                        name="event_creator_image"
-                        value={formData.event_creator_image}
-                        onChange={handleChange}
-                        placeholder="https://example.com/avatar.jpg"
-                        disabled={loading}
-                    />
+                    <label htmlFor="event_creator_image">URL/Base64 изображения организатора</label>
+                     {/* Если нужен File Input для Base64, замени этот input */}
+                    <input type="text" id="event_creator_image" name="event_creator_image" value={formData.event_creator_image} onChange={handleChange} placeholder="https://... или data:image/..." disabled={loading}/>
                 </div>
 
                 {/* Поле Контактный телефон */}
                 <div className={styles.formGroup}>
                     <label htmlFor="contact_phone">Контактный телефон</label>
-                    <input
-                        type="tel"
-                        id="contact_phone"
-                        name="contact_phone"
-                        value={formData.contact_phone}
-                        onChange={handleChange}
-                        disabled={loading}
-                    />
+                    <input type="tel" id="contact_phone" name="contact_phone" value={formData.contact_phone} onChange={handleChange} disabled={loading}/>
                 </div>
 
                 {/* Поле Контактный Email */}
                 <div className={styles.formGroup}>
                     <label htmlFor="contact_email">Контактный Email</label>
-                    <input
-                        type="email"
-                        id="contact_email"
-                        name="contact_email"
-                        value={formData.contact_email}
-                        onChange={handleChange}
-                        disabled={loading}
-                    />
+                    <input type="email" id="contact_email" name="contact_email" value={formData.contact_email} onChange={handleChange} disabled={loading}/>
                 </div>
 
-
-                {/* Сообщение об ошибке формы */}
-                {formError && <p className={styles.formError}>{formError}</p>}
-                {/* Общее сообщение об ошибке API */}
-                {error && <p className={styles.formError}>{error}</p>}
+                {/* --- ДОБАВЛЕНО ПОЛЕ СТАТУСА МОДЕРАЦИИ (только в режиме редактирования) --- */}
+                {isEditMode && (
+                    <div className={styles.formGroup}>
+                         <label htmlFor="is_moderate" className={styles.checkboxLabel}>
+                             <input
+                                type="checkbox"
+                                id="is_moderate"
+                                name="is_moderate"
+                                checked={formData.is_moderate}
+                                onChange={handleChange}
+                                disabled={loading}
+                             />
+                             Одобрено (is_moderate)
+                         </label>
+                    </div>
+                )}
+                {/* --- КОНЕЦ ПОЛЯ СТАТУСА --- */}
 
 
                 {/* Кнопки управления */}

@@ -1,9 +1,9 @@
 // src/admin/events/AdminEventsListPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../auth/AuthProvider'; 
-import { getAllEventsAdmin, deleteEventAdmin, approveEventAdmin} from './eventAdminService'; 
-import styles from './AdminEvents.module.css';
+import { useAuth } from '../auth/AuthProvider'; // Исправил путь, если AuthProvider в корне auth
+import { getAllEventsAdmin, deleteEventAdmin, approveEventAdmin} from './eventAdminService'; // Исправил путь к сервису
+import styles from './AdminEvents.module.css'; // Используем стили из родительской папки admin
 
 const AdminEventsListPage = () => {
     const { user } = useAuth();
@@ -11,90 +11,89 @@ const AdminEventsListPage = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [processingId, setProcessingId] = useState(null);
+    const [processingId, setProcessingId] = useState(null); // Для отслеживания одобрения/удаления
 
     const fetchEvents = useCallback(async () => {
-        if (!token) return; // Не делаем запрос без токена
+        if (!token) return;
 
         setLoading(true);
         setError(null);
         try {
+            // Используем /events/all для админки
             const data = await getAllEventsAdmin(token);
-            setEvents(data || []); // Устанавливаем данные или пустой массив
+            setEvents(data || []);
         } catch (err) {
             console.error("Ошибка загрузки событий:", err);
             setError(err.message || "Не удалось загрузить список событий.");
-            setEvents([]); // Сбрасываем события в случае ошибки
+            setEvents([]);
         } finally {
             setLoading(false);
         }
-    }, [token]); // Зависимость от токена
+    }, [token]);
 
     useEffect(() => {
          fetchEvents();
     }, [fetchEvents]);
 
     const handleDelete = async (eventId, eventName) => {
-        if (!token) return;
+        if (!token || processingId) return; // Не удаляем, если что-то уже обрабатывается
 
-        // Запрос подтверждения
         if (window.confirm(`Вы уверены, что хотите удалить событие "${eventName}" (ID: ${eventId})?`)) {
-            setLoading(true); // Можно использовать отдельный state для удаления
+            setProcessingId(eventId); // Блокируем кнопки для этой строки
+            setError(null);
             try {
                 await deleteEventAdmin(eventId, token);
-                // Обновляем список после удаления (простой вариант - перезапросить все)
-                await fetchEvents();
-                // Альтернатива: удалить из локального state
-                // setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+                // Обновляем список после удаления
+                setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+                // Можно добавить alert или toast для успеха
+                // alert("Событие успешно удалено.");
             } catch (err) {
                 console.error("Ошибка удаления события:", err);
-                setError(err.message || "Не удалось удалить событие.");
-                setLoading(false); // Сбросить isLoading, если используется общий
+                const errMsg = err.message || "Не удалось удалить событие.";
+                setError(errMsg);
+                // Можно добавить alert или toast для ошибки
+                // alert(`Ошибка: ${errMsg}`);
+            } finally {
+                setProcessingId(null); // Снимаем блокировку
             }
-            // setLoading(false) должен быть в finally, если используется общий loading
         }
     };
+
     const handleApproveFromAdminList = async (eventId) => {
-        if (!token || processingId) return; // Проверяем токен и не обрабатывается ли уже что-то
-        setProcessingId(eventId); // Устанавливаем ID обрабатываемого события
-        setError(null); // Сбрасываем предыдущие ошибки
+        if (!token || processingId) return;
+        setProcessingId(eventId);
+        setError(null);
 
         try {
-            
-            // Вызываем API для одобрения
-            const updatedEvent = await approveEventAdmin(eventId, token); // API вернет обновленное событие
-
-            // Обновляем состояние списка событий:
-            // Находим событие по ID и меняем его статус is_moderate на true
+            await approveEventAdmin(eventId, token);
+            // Обновляем статус в локальном состоянии
             setEvents(prevEvents =>
                 prevEvents.map(event =>
                     event.id === eventId
-                        ? { ...event, is_moderate: true } // Обновляем статус у нужного события
-                        : event // Остальные оставляем как есть
+                        ? { ...event, is_moderate: true }
+                        : event
                 )
             );
-            // Или можно использовать данные из updatedEvent, если API его возвращает:
-            // setEvents(prevEvents =>
-            //     prevEvents.map(event =>
-            //         event.id === eventId ? updatedEvent : event
-            //     )
-            // );
-
+             // Можно добавить alert или toast для успеха
+             // alert("Событие успешно одобрено.");
         } catch (err) {
-            console.error(`Ошибка одобрения события ${eventId} из списка:`, err);
-            setError(`Не удалось одобрить событие ID ${eventId}: ${err.message}`);
+            console.error(`Ошибка одобрения события ${eventId}:`, err);
+            const errMsg = `Не удалось одобрить событие ID ${eventId}: ${err.message}`;
+            setError(errMsg);
+             // Можно добавить alert или toast для ошибки
+             // alert(`Ошибка: ${errMsg}`);
         } finally {
-            setProcessingId(null); // Снимаем флаг обработки в любом случае
+            setProcessingId(null);
         }
     };
+
     // --- Рендеринг ---
-    if (loading && events.length === 0) { // Показываем лоадер только при первой загрузке
+    if (loading && events.length === 0) {
         return <div className={styles.statusMessage}>Загрузка событий...</div>;
     }
 
-    if (error) {
-        return <div className={`${styles.statusMessage} ${styles.error}`}>Ошибка: {error}</div>;
-    }
+    // Показываем ошибку API над таблицей, если она есть
+    {error && <p className={`${styles.statusMessage} ${styles.error}`}>Ошибка: {error}</p>}
 
     return (
         <div className={styles.adminPageContainer}>
@@ -108,54 +107,67 @@ const AdminEventsListPage = () => {
                 <div className={styles.statusMessage}>События не найдены.</div>
             ) : (
                 <table className={styles.adminTable}>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Название</th>
-                        <th>Время</th>
-                        <th>Создатель</th>
-                        <th>Статус</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {events.map((event) => (
-                        <tr key={event.id}>
-                            <td>{event.id}</td>
-                            <td>{event.event_name}</td>
-                            <td>{new Date(event.event_time).toLocaleString()}</td>
-                            <td>
-                                {event.event_creator_name || event.creator?.login || 'N/A'}
-                                {event.creator_id && ` (ID: ${event.creator_id})`}
-                            </td>
-                            <td> {/* <-- Статус модерации */}
-                                {event.is_moderate
-                                  ? <span className={styles.statusApproved}>Одобрено</span>
-                                  : <span className={styles.statusPending}>Ожидает</span>
-                                }
-                                {/* Если админ может менять статус прямо здесь, добавить кнопку/переключатель */}
-                                {/* <button onClick={() => handleToggleModerate(event.id, !event.is_moderate)}>Изменить</button> */}
-                            </td>
-                            <td className={styles.actionsCell}>
-                               {/* ... кнопки Редактировать / Удалить ... */}
-                               {/* Можно добавить кнопку "Одобрить", если не одобрено */}
-                               {!event.is_moderate && (
-                                   <button
-                                       onClick={() => handleApproveFromAdminList(event.id)} // Нужна новая функция-обработчик
-                                       className={`${styles.actionButton} ${styles.approveButton}`}
-                                       disabled={loading}
-                                    >
-                                       Одобрить
-                                   </button>
-                               )}
-                            </td>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название</th>
+                            <th>Время</th>
+                            <th>Создатель</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {events.map((event) => (
+                            <tr key={event.id}>
+                                <td>{event.id}</td>
+                                <td>{event.event_name}</td>
+                                {/* Форматируем дату */}
+                                <td>{event.event_time ? new Date(event.event_time).toLocaleString('ru-RU') : 'N/A'}</td>
+                                <td>
+                                    {/* Используем имя создателя из события, если есть, иначе из связанного юзера */}
+                                    {event.event_creator_name || event.creator?.login || 'N/A'}
+                                    {/* Показываем ID создателя для информации */}
+                                    {event.creator_id && ` (ID: ${event.creator_id})`}
+                                </td>
+                                <td> {/* Статус модерации */}
+                                    {event.is_moderate
+                                    ? <span className={styles.statusApproved}>Одобрено</span>
+                                    : <span className={styles.statusPending}>Ожидает</span>
+                                    }
+                                </td>
+                                <td className={styles.actionsCell}>
+                                    {/* Кнопка Редактировать */}
+                                    <Link
+                                        to={`/admin/events/${event.id}/edit`}
+                                        className={`${styles.actionButton} ${styles.editButton}`}
+                                    >
+                                        Редактировать
+                                    </Link>
+                                    {/* Кнопка Удалить */}
+                                    <button
+                                        onClick={() => handleDelete(event.id, event.event_name)}
+                                        className={`${styles.actionButton} ${styles.deleteButton}`}
+                                        disabled={processingId === event.id} // Блокируем во время обработки этой строки
+                                    >
+                                        {processingId === event.id ? 'Удаление...' : 'Удалить'}
+                                    </button>
+                                    {/* Кнопка Одобрить (если не одобрено) */}
+                                    {!event.is_moderate && (
+                                        <button
+                                            onClick={() => handleApproveFromAdminList(event.id)}
+                                            className={`${styles.actionButton} ${styles.approveButton}`}
+                                            disabled={processingId === event.id} // Блокируем во время обработки этой строки
+                                        >
+                                            {processingId === event.id ? 'Одобрение...' : 'Одобрить'}
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             )}
-             {/* Можно добавить индикатор загрузки при удалении, если используется отдельный state */}
-             {/* {isDeleting && <div className={styles.statusMessage}>Удаление...</div>} */}
         </div>
     );
 };
